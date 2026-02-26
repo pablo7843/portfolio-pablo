@@ -1,0 +1,210 @@
+---
+import { ui, languages } from '../../i18n/ui';
+import { useTranslations } from '../../i18n/utils';
+
+import Badge from '../../components/Badge.astro';
+import Header from '../../components/Header.astro';
+import Tecnologias from '../../components/Tecnologias.astro';
+import Layout from '../../layouts/Layout.astro';
+import Trabajos from '../../components/Trabajos.astro';
+import Socials from '../../components/Socials.astro';
+import InteractiveShell from '../../components/InteractiveShell.astro';
+import Footer from '../../components/Footer.astro';
+
+// 1. Generamos las rutas dinámicas para /es y /en
+export async function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+// 2. Obtenemos el idioma actual de la URL
+const { lang } = Astro.params;
+const currentLang = (lang as keyof typeof ui) || 'es';
+const t = useTranslations(currentLang);
+---
+
+<Layout title={currentLang === 'es' ? "Portfolio Pablo Climent" : "Pablo Climent | Portfolio"}>
+  <Header currentLang={currentLang} />
+
+  <main>
+    <div class="terminal" data-aos="fade-up" data-aos-duration="1200">
+      <div class="terminal-header">
+        <span class="terminal-button red"></span>
+        <span class="terminal-button yellow"></span>
+        <span class="terminal-button green"></span>
+      </div>
+
+      <div class="terminal-content">
+        <div class="text" data-aos="zoom-in" data-aos-delay="300">
+          <h1 class="title">
+            <span id="type-title" class="js-typing"></span>
+            <span id="badge-container" class="hidden-badge">
+              <Badge>{t('hero.status')}</Badge>
+            </span>
+          </h1>
+
+          <h2 class="subtitle">
+            <span id="type-subtitle" class="js-typing"></span>
+          </h2>
+        </div>
+
+        <div class="photo-container" data-aos="fade-down" data-aos-delay="400">
+          <img src="/foto.png" alt="Pablo Climent" class="photo"/>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section data-aos="fade-up" data-aos-duration="1300">
+    <InteractiveShell />
+  </section>
+
+  <section data-aos="fade-up" data-aos-duration="1300">
+    <Socials />
+  </section>
+
+  <section data-aos="fade-up" data-aos-duration="1300">
+    <Tecnologias />
+  </section>
+
+  <section data-aos="fade-up" data-aos-duration="1300">
+    <Trabajos lang={currentLang} />
+  </section>
+  
+  <Footer />
+</Layout>
+
+<style>
+/* ----- ESTILOS ----- */
+main {
+  margin: 180px auto 100px;
+  padding: 0 20px;
+  max-width: 1400px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.terminal {
+  background-color: var(--bg-dark, #0a0a0a);
+  border: 2px solid var(--primary-color, #00ff00);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  width: 100%;
+  overflow: hidden;
+}
+
+.terminal-header {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--primary-color, #00ff00);
+}
+
+.terminal-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.red { background-color: #ff5f56; }
+.yellow { background-color: #ffbd2e; }
+.green { background-color: #27c93f; }
+
+.terminal-content {
+  padding: 60px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+}
+
+.text { flex: 2; text-align: left; }
+.photo-container { flex: 1; display: flex; justify-content: center; }
+
+.photo {
+  width: 320px;
+  height: 320px;
+  border-radius: 12px;
+  border: 2px solid var(--primary-color);
+  object-fit: cover;
+  filter: grayscale(20%);
+}
+
+.title {
+  font-size: 3.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  font-family: 'Courier New', monospace;
+  color: var(--text-primary, #ffffff);
+}
+
+.subtitle {
+  font-size: 1.6rem;
+  color: var(--text-secondary, #cccccc);
+  font-family: 'Courier New', monospace;
+  line-height: 1.5;
+}
+
+.js-typing { display: inline; }
+.cursor-active { border-right: 3px solid var(--primary-color); padding-right: 5px; animation: blink 1s step-end infinite; }
+
+@keyframes blink { 50% { border-color: transparent; } }
+
+.hidden-badge { opacity: 0; display: none; }
+.show-badge { display: inline-block; animation: popIn 0.5s ease forwards; }
+
+@keyframes popIn { to { opacity: 1; } }
+
+@media (max-width: 1024px) {
+  .terminal-content { flex-direction: column-reverse; padding: 30px; text-align: center; }
+  .text { text-align: center; }
+  .title { font-size: 2rem; justify-content: center; }
+  .subtitle { font-size: 1.1rem; }
+  .photo { width: 220px; height: 220px; }
+}
+</style>
+
+<script is:inline define:vars={{ 
+    text1: t('hero.title'), 
+    text2: t('hero.desc') 
+}}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const titleEl = document.getElementById('type-title');
+    const subtitleEl = document.getElementById('type-subtitle');
+    const badgeEl = document.getElementById('badge-container');
+
+    if (!titleEl || !subtitleEl) return;
+
+    function typeWriter(element, text, speed, callback) {
+      let i = 0;
+      element.textContent = "";
+      element.classList.add('cursor-active');
+
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed + (Math.random() * 20));
+        } else {
+          element.classList.remove('cursor-active');
+          if (callback) callback();
+        }
+      }
+      type();
+    }
+
+    setTimeout(() => {
+      typeWriter(titleEl, text1, 50, () => {
+        if(badgeEl) badgeEl.classList.add('show-badge');
+        setTimeout(() => {
+          typeWriter(subtitleEl, text2, 30, () => {
+            subtitleEl.classList.add('cursor-active');
+          });
+        }, 400);
+      });
+    }, 500);
+  });
+</script>

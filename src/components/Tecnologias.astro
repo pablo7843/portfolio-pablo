@@ -1,39 +1,44 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const categories = [
   {
-    title: "FRONT-END & MOBILE",
+    title: t('tech.cat.frontend'),
     icon: "💻",
     techs: [
-      { name: "React / Angular", desc: "Complex UI Architect" },
-      { name: "Kotlin", desc: "Native Mobile Development" },
-      { name: "HTML5 & CSS3", desc: "Semantic & Secure Styling" }
+      { name: "React / Angular", desc: t('tech.desc.react') },
+      { name: "Kotlin", desc: t('tech.desc.kotlin') },
+      { name: "HTML5 & CSS3", desc: t('tech.desc.html') }
     ]
   },
   {
-    title: "SERVER-SIDE & ARCHITECTURE",
+    title: t('tech.cat.backend'),
     icon: "⚙️",
     techs: [
-      { name: "Java / Spring Security", desc: "Secure Backend Auth" },
-      { name: "Python", desc: "Automation & Scripting" },
-      { name: "NodeJS / PHP", desc: "API Design & Legacy Support" }
+      { name: "Java / Spring Security", desc: t('tech.desc.java') },
+      { name: "Python", desc: t('tech.desc.python') },
+      { name: "NodeJS / PHP", desc: t('tech.desc.node') }
     ]
   },
   {
-    title: "INFRASTRUCTURE & DEVSECOPS",
+    title: t('tech.cat.infra'),
     icon: "🛡️",
     techs: [
-      { name: "Docker", desc: "Container Hardening" },
-      { name: "Linux OS", desc: "Server Administration" },
-      { name: "Cloud (AWS/Azure)", desc: "Safe Cloud Deployment" }
+      { name: "Docker", desc: t('tech.desc.docker') },
+      { name: "Linux OS", desc: t('tech.desc.linux') },
+      { name: "Cloud (AWS/Azure)", desc: t('tech.desc.cloud') }
     ]
   },
   {
-    title: "AUDIT & PENTESTING",
+    title: t('tech.cat.audit'),
     icon: "🚨",
     techs: [
-      { name: "Burp Suite / Metasploit", desc: "Vulnerability Research" },
-      { name: "Wireshark / Nmap", desc: "Network Traffic Analysis" },
-      { name: "OWASP", desc: "Standard Security Compliance" }
+      { name: "Burp Suite / Metasploit", desc: t('tech.desc.burp') },
+      { name: "Wireshark / Nmap", desc: t('tech.desc.wireshark') },
+      { name: "OWASP", desc: t('tech.desc.owasp') }
     ]
   }
 ];
@@ -43,7 +48,7 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
 
 <section id="tech-section">
   <div class="section-header">
-    <h2 class="glitch-text">SYSTEM_KNOWLEDGE_SCAN</h2>
+    <h2 class="glitch-text">{t('tech.section.title')}</h2>
     <div class="scan-line"></div>
   </div>
 
@@ -60,9 +65,8 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
             {cat.techs.map(tech => (
               <li>
                 <div class="tech-info">
-                  <span class="tech-name">
-                    <span class="status-dot"></span> {tech.name}
-                  </span>
+                  <span class="status-dot"></span>
+                  <span class="tech-name">{tech.name}</span>
                   <span class="tech-desc">{tech.desc}</span>
                 </div>
               </li>
@@ -70,8 +74,8 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
           </ul>
         </div>
         <div class="card-footer">
-          <span class="scanning-text">DATA_TYPE: ENCRYPTED_SKILL</span>
-          <span class="status-ok">STATUS: SECURE</span>
+          <span class="scanning-text">{t('tech.data.type')}</span>
+          <span class="status-ok">{t('tech.status.secure')}</span>
         </div>
       </div>
     ))}
@@ -82,7 +86,7 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
       <div class="loader-container">
         <div class="loader-bar"></div>
       </div>
-      <h3><span class="pulse-icon"></span> INCOMING_LEARNING_DATA (ACTIVE_RESEARCH)</h3>
+      <h3><span class="pulse-icon"></span> {t('tech.learning.title')}</h3>
     </div>
     <div class="learning-content">
       <div class="tech-ticker">
@@ -96,8 +100,8 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
       </div>
     </div>
     <div class="learning-footer">
-      <span class="scanning-text">BUFFERING: 75% COMPLETE</span>
-      <span>SOURCE: SELF_TAUGHT_LEARNING</span>
+      <span class="scanning-text">{t('tech.learning.buffering')}</span>
+      <span>{t('tech.learning.source')}</span>
     </div>
   </div>
 </section>
@@ -325,7 +329,6 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
     font-size: 1.2rem; font-weight: bold; color: var(--text-primary); 
   }
 
-  /* CAMBIO: Corchetes en Cyan para hacer contraste sutil */
   .code-bracket { 
     color: #00d4ff; 
     font-weight: normal;

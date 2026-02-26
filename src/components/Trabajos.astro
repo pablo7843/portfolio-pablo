@@ -1,25 +1,30 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const trabajos = [
     {
         title: 'Star WikiWars',
-        description: 'Star Wars Wiki for fans',
+        description: t('projects.starwars.desc'),
         image: '/star-wars.webp',
         technologies: ['Kotlin'],
-        details: 'Aplicación nativa de Android que utiliza la arquitectura MVVM. Desarrollada en Kotlin, consume la API pública de Star Wars (SWAPI) para mostrar datos de personajes y naves, con una alta optimización para la experiencia móvil.'
+        details: t('projects.starwars.details')
     },
     {
         title: 'Qr-Shield',
-        description: 'Secure QR code scanner',
+        description: t('projects.qrshield.desc'),
         image: '/banco.webp',
         technologies: ['Flutter', 'Supabase'],
-        details: 'Escaner de QR seguro para prevenir phishing. Escanea códigos QR y verifica URLs para decidir si el código QR es seguro, sospechoso o peligroso. El usuario puede iniciar sesión para activar el historial de escaneos y gestionarlos.'
+        details: t('projects.qrshield.details')
     },
     {
         title: 'Music web reproducer',
-        description: 'Reproducer online',
+        description: t('projects.music.desc'),
         image: '/harmoniq.png',
         technologies: ['React', 'Supabase'],
-        details: 'Plataforma de streaming de música construida con React para el frontend y Supabase (backend como servicio) para la autenticación y almacenamiento. Focalizada en la gestión de sesiones seguras y reproducción optimizada.'
+        details: t('projects.music.details')
     }
 ];
 
@@ -40,7 +45,7 @@ const getTechColor = (tech: string) => {
 ---
 
 <div class="trabajos-wrapper-outer">
-    <h2 class="glitch-text">PROJECT_ARCHIVES</h2>
+    <h2 class="glitch-text">{t('projects.section.title')}</h2>
     
     <div class="trabajos-container">
         {trabajos.map((trabajo, index) => (
@@ -63,23 +68,23 @@ const getTechColor = (tech: string) => {
                                 ))}
                             </div>
                             <button class="flip-btn" onclick={`document.getElementById('card-inner-${index}').classList.add('is-flipped')`}>
-                                ACCESS_DETAILS
+                                {t('projects.btn.details')}
                             </button>
                         </div>
                     </div>
 
                     <div class="flip-card-back">
                         <div class="details-content">
-                            <h4 class="details-title">FILE_SPECIFICATIONS</h4>
+                            <h4 class="details-title">{t('projects.label.specs')}</h4>
                             <div class="scroll-area">
                                 <p class="details-text">{trabajo.details}</p>
                             </div>
                             <div class="action-links">
-                                <a href="#" target="_blank">CODE_LINK 💻</a>
-                                <a href="#" target="_blank">LIVE_DEMO 🚀</a>
+                                <a href="#" target="_blank">{t('projects.label.code')}</a>
+                                <a href="#" target="_blank">{t('projects.label.demo')}</a>
                             </div>
                             <button class="back-btn" onclick={`document.getElementById('card-inner-${index}').classList.remove('is-flipped')`}>
-                                GO_BACK
+                                {t('projects.btn.back')}
                             </button>
                         </div>
                     </div>

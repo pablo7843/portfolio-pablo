@@ -1,0 +1,212 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/terminal.css';
+
+const { pathname } = Astro.url;
+const currentLang = pathname.startsWith('/en') ? 'en' : 'es';
+
+const title = "404 - System Not Found | Terminal";
+---
+
+<Layout title={title}>
+    <div class="page-wrapper">
+        <main class="terminal-window">
+            <div class="window-header">
+                <div class="window-controls">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="window-title">root@pablo-sec: ~ /access-denied</div>
+            </div>
+
+            <div class="terminal-body">
+                <header>
+                    <div class="system-id">
+                        [ 🚀 PABLO'S SECURITY SYSTEM V.2.0 ]
+                    </div>
+                </header>
+
+                <h1 class="glitch-text" data-text="404 - ACCESS DENIED">
+                    404 - ACCESS DENIED
+                </h1>
+                
+                <div class="divider"></div>
+
+                <div class="terminal-content">
+                    <div class="prompt-line">
+                        <span class="user">user@portfolio:~$</span>
+                        <span class="typed">cd /secret-projects</span>
+                        <span class="cursor">_</span>
+                    </div>
+                    
+                    <div class="error-box">
+                        <span class="error-label">[ERROR]</span>
+                        <span class="error-text">Path not recognized. Unauthorized access detected.</span>
+                    </div>
+
+                    <div class="help-section">
+                        <span class="user">user@portfolio:~$</span>
+                        <span class="command">run help.exe</span>
+                        
+                        <nav class="terminal-nav">
+                            <a href={`/${currentLang}/`} class="nav-btn">./home</a>
+                            <a href={`/${currentLang}/#proyectos`} class="nav-btn">./projects</a>
+                            <a href={`/${currentLang}/#contacto`} class="nav-btn">./contact</a>
+                        </nav>
+                    </div>
+
+                    <p class="final-msg">
+                        {currentLang === 'es' 
+                            ? "> El sistema ha bloqueado la ruta. Selecciona un comando arriba para volver." 
+                            : "> Navigation path blocked. Select a valid command above to return."
+                        }
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<style>
+    /* Contenedor para centrar la ventana */
+    .page-wrapper {
+        min-height: 100vh;
+        background-color: #050505; /* Fondo más oscuro para resaltar el verde */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    /* Ventana tipo terminal */
+    .terminal-window {
+        width: 100%;
+        max-width: 750px; /* Limitamos el ancho para que no se estire */
+        background: #0d1a26;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 40px rgba(0, 255, 0, 0.15);
+        border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    /* Barra superior */
+    .window-header {
+        background: #1a1a1a;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #333;
+    }
+
+    .window-controls { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .red { background: #ff5f56; }
+    .yellow { background: #ffbd2e; }
+    .green { background: #27c93f; }
+
+    .window-title {
+        flex-grow: 1;
+        text-align: center;
+        color: #666;
+        font-size: 0.8rem;
+        font-family: monospace;
+    }
+
+    /* Cuerpo de la terminal */
+    .terminal-body {
+        padding: 40px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .system-id {
+        color: #00ff00;
+        font-size: 0.9rem;
+        opacity: 0.7;
+        margin-bottom: 20px;
+    }
+
+    .glitch-text {
+        color: #ff3333;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+        text-shadow: 2px 2px #000;
+    }
+
+    .divider {
+        height: 2px;
+        background: linear-gradient(90deg, #ff3333 0%, transparent 100%);
+        margin: 20px 0 30px 0;
+    }
+
+    .terminal-content {
+        text-align: left;
+    }
+
+    .prompt-line {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    .user { color: #00ff00; margin-right: 10px; }
+    .typed { color: #fff; }
+
+    .error-box {
+        background: rgba(255, 51, 51, 0.1);
+        border-left: 4px solid #ff3333;
+        padding: 15px;
+        margin: 20px 0;
+    }
+
+    .error-label { color: #ff3333; font-weight: bold; margin-right: 10px; }
+    .error-text { color: #ff8888; }
+
+    .help-section { margin-top: 30px; }
+
+    .terminal-nav {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .nav-btn {
+        color: #00ff00;
+        text-decoration: none;
+        padding: 8px 15px;
+        border: 1px solid #00ff00;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .nav-btn:hover {
+        background: rgba(0, 255, 0, 0.1);
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .final-msg {
+        margin-top: 30px;
+        color: #555;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+
+    .cursor {
+        animation: blink 1s infinite;
+        color: #00ff00;
+        font-weight: bold;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Adaptación para móviles */
+    @media (max-width: 600px) {
+        .terminal-body { padding: 20px; }
+        .glitch-text { font-size: 1.8rem; }
+        .terminal-nav { gap: 10px; }
+        .nav-btn { width: 100%; text-align: center; }
+    }
+</style>

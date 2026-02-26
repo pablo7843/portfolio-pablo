@@ -1,17 +1,23 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const githubLink = "https://github.com/pablo7843";
 const linkedinLink = "https://www.linkedin.com/in/pabloclimentsanfelix";
 const emailLink = "mailto:pclimentsanfelix@gmail.com";
-const cvLink = "/CV_PabloCliment.pdf";
+
+// Si tienes un CV diferente para cada idioma, puedes hacer esto:
+const cvLink = lang === 'es' ? "/CV_PabloCliment_ES.pdf" : "/CV_PabloCliment_EN.pdf";
 ---
 
 <section class="social-wrapper">
   <div class="social-card">
-    <h2>Connect with me</h2>
+    <h2>{t('social.title')}</h2>
 
     <p class="bio">
-      I have studied DAM and DAW, and now I am specializing in Cybersecurity.  
-      Passionate about technology, software development and continuous learning.
+      {t('social.bio')}
     </p>
 
     <div class="social-links">
@@ -30,12 +36,12 @@ const cvLink = "/CV_PabloCliment.pdf";
       </a>
     </div>
 
-    <a href={cvLink} download class="download-cv">Download CV</a>
+    <a href={cvLink} download class="download-cv">{t('social.downloadCV')}</a>
   </div>
 </section>
 
 <style>
-
+/* --- ESTILOS MANTENIDOS --- */
 .social-wrapper {
   width: 100%;
   display: flex;
@@ -57,16 +63,6 @@ const cvLink = "/CV_PabloCliment.pdf";
 
 html.light-mode .social-card {
   background-color: var(--bg-light-card);
-  box-shadow: 0 0 15px var(--primary-color);
-}
-
-html.dark-mode .github {
-  content: url("https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg");
-  filter: invert(1);
-}
-
-html.light-mode .github {
-  filter: none;
 }
 
 .social-card:hover {
@@ -100,9 +96,30 @@ html.light-mode .github {
 
 .social-links a:hover img {
   transform: scale(1.2);
+}
+
+.social-links a:hover img:not(.github) {
   filter: brightness(1.5);
 }
 
+/* --- TU FIX DE GITHUB --- */
+html.dark-mode .github {
+  filter: invert(1);
+}
+
+html.dark-mode .social-links a:hover .github {
+  filter: invert(1) brightness(1.5); 
+}
+
+html.light-mode .github {
+  filter: none; 
+}
+
+html.light-mode .social-links a:hover .github {
+  filter: brightness(1.5);
+}
+
+/* --- BOTÓN CV --- */
 .download-cv {
   display: inline-block;
   padding: 0.8rem 1.6rem;
@@ -125,12 +142,7 @@ html.light-mode .download-cv:hover {
 }
 
 @media (max-width: 640px) {
-  .social-card {
-    padding: 1.5rem;
-  }
-
-  .social-links {
-    gap: 1rem;
-  }
+  .social-card { padding: 1.5rem; }
+  .social-links { gap: 1rem; }
 }
 </style>

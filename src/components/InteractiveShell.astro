@@ -1,13 +1,31 @@
 ---
 // src/components/InteractiveShell.astro
-// Componente de Terminal Interactiva
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// Objeto con todas las traducciones para pasar al cliente
+const i18nData = {
+    welcome: t('terminal.welcome'),
+    whoami: t('terminal.whoami'),
+    sudo: t('terminal.sudo'),
+    readme: t('terminal.readme'),
+    projectQr: t('terminal.projects.qr'),
+    projectHarmoniq: t('terminal.projects.harmoniq'),
+    projectWiki: t('terminal.projects.wiki'),
+    errCmd: t('terminal.error.cmd'),
+    errDir: t('terminal.error.dir'),
+    errFile: t('terminal.error.file'),
+};
 ---
-<div id="terminal-wrapper">
-    <h2>💻 Terminal -- (Type 'help' to begin)</h2>
+
+<div id="terminal-wrapper" data-i18n={JSON.stringify(i18nData)}>
+    <h2>{t('terminal.header')}</h2>
     <div id="output-area">
         <p class="prompt-line">
             <span class="prompt-user" id="prompt-user-line">guest@pablo-sec:~$</span> 
-            <span id="initial-message">Welcome to Pablo's Portfolio System.</span>
+            <span id="initial-message">{i18nData.welcome}</span>
         </p>
     </div>
 
@@ -22,7 +40,6 @@
         font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         background-color: #0c0c1a;
         color: #00ff00;
-        /* 🔥 AÑADIDO: Resplandor sutil al texto para efecto neón/CRT */
         text-shadow: 0 0 5px rgba(0, 255, 0, 0.4); 
         border: 2px solid #00ff00;
         box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
@@ -34,7 +51,6 @@
         overflow-y: auto;
         user-select: text; 
         cursor: text;
-        /* 🔥 AÑADIDO: Transición suave para el scroll */
         scroll-behavior: smooth; 
     }
     h2 {
@@ -43,7 +59,6 @@
     .prompt-user {
         color: #66ccff; 
         user-select: none; 
-        /* 🔥 AÑADIDO: Resplandor al usuario */
         text-shadow: 0 0 5px rgba(102, 204, 255, 0.4);
     }
     #prompt-user-line{
@@ -65,7 +80,6 @@
         font-family: inherit;
         font-size: inherit;
         user-select: text; 
-        /* 🔥 AÑADIDO: Mismo resplandor para el input */
         text-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
     }
     #output-area p {
@@ -75,8 +89,6 @@
     #initial-message {
         color: #cccccc;
     }
-    
-    /* 🔥 AÑADIDO: Clases para dar color específico a las salidas */
     .color-error { color: #ff3333; text-shadow: 0 0 5px rgba(255, 51, 51, 0.4); }
     .color-info { color: #ffff66; text-shadow: 0 0 5px rgba(255, 255, 102, 0.4); }
 </style>
@@ -85,36 +97,36 @@
 // @ts-nocheck 
 
     document.addEventListener('DOMContentLoaded', () => {
-
+        const terminalWrapper = document.getElementById('terminal-wrapper');
         const input = document.getElementById('command-input');
         const output = document.getElementById('output-area');
-        const terminalWrapper = document.getElementById('terminal-wrapper');
         const currentPromptDisplay = document.getElementById('current-prompt-display'); 
 
         if (!input || !output || !terminalWrapper || !currentPromptDisplay) return;
 
-        /** @type {string[]} */
+        // Recuperamos las traducciones pasadas desde el frontmatter
+        const i18n = JSON.parse(terminalWrapper.dataset.i18n);
+
         let history = [];
         let historyIndex = -1;
-        let isTyping = false; // 🔥 AÑADIDO: Control de estado para la animación de escritura
+        let isTyping = false; 
 
         const fileSystem = {
             "~": {
-                "README.txt": "Hello! I'm Pablo, a Cybersecurity Dev. In this portfolio, I’m giving you a small overview of my knowledge as a web developer, mobile developer, and cybersecurity technician! See you soon!",
+                "README.txt": i18n.readme,
                 "projects": {
-                    "QR-Shield.txt": "A secure QR code scanner app to prevent phishing. It scans QR codes and checks URLs to decide if the QR code is safe, suspicious or dangerous. User can Sign in to activate the history of scans and manage them.",
-                    "HarmoniQ.txt": "Online music player. The user will be able to create playlists, listen music and follow the song with the lyrics of the chosed song.",
-                    "Star-WikiWars.txt": "Star Wars wiki on mobile. You will see the especifications of your favourite characters in the movies saga with the possibilities to add your favourite characters to a local Database!",
+                    "QR-Shield.txt": i18n.projectQr,
+                    "HarmoniQ.txt": i18n.projectHarmoniq,
+                    "Star-WikiWars.txt": i18n.projectWiki,
                 },
                 "contact": {
                     "email.txt": "pablosanfelix8@gmail.com",
-                    "linkedin.txt": "https://www.linkedin.com/in/pablo-climent-sanfélix-1b5a77385/"
+                    "linkedin.txt": "https://www.linkedin.com/in/pabloclimentsanfelix/"
                 }
             },
             currentDir: "~"
         };
         
-        // 🔥 AÑADIDO: Nuevos comandos a la lista de autocompletado
         const availableCommands = ['help', 'ls', 'cd', 'cat', 'clear', 'scroll', 'whoami', 'date', 'sudo'];
 
         const getCurrentDirectoryContent = () => {
@@ -172,7 +184,7 @@
 
         const executeCommand = (command) => {
             const parts = command.trim().split(/\s+/);
-            const cmd = parts[0];
+            const cmd = parts[0].toLowerCase();
             const args = parts.slice(1);
 
             switch (cmd) {
@@ -187,20 +199,18 @@
                         - date
                         - sudo`;
 
-                // 🔥 AÑADIDO: Nuevos comandos para darle personalidad
                 case 'whoami':
-                    return { text: "guest\n(But we both know you are a recruiter looking for a great dev)", class: "color-info" };
+                    return { text: i18n.whoami, class: "color-info" };
                 
                 case 'date':
                     return new Date().toString();
 
                 case 'sudo':
-                    return { text: "user is not in the sudoers file. This incident will be reported. 🚨", class: "color-error" };
+                    return { text: i18n.sudo, class: "color-error" };
 
                 case 'ls': {
                     const currentObj = getCurrentDirectoryContent();
                     if (typeof currentObj === "object") {
-                        // 🔥 MEJORA: Añadir una marca visual para diferenciar carpetas de archivos
                         return Object.keys(currentObj).map(key => {
                             return typeof currentObj[key] === 'object' ? `[DIR] ${key}` : key;
                         }).join("    ");
@@ -214,17 +224,17 @@
                     if (target === ".." || !target || target === "~") {
                         fileSystem.currentDir = "~";
                         updateInputPrompt(); 
-                        return "Changed directory to ~";
+                        return ""; // No devolvemos texto para que sea más limpio
                     }
 
                     const obj = fileSystem["~"][target];
                     if (obj && typeof obj === "object") {
                         fileSystem.currentDir = target;
                         updateInputPrompt(); 
-                        return `Changed directory to ${target}`;
+                        return "";
                     }
 
-                    return { text: `Error: cd: ${target}: No such directory.`, class: "color-error" };
+                    return { text: i18n.errDir.replace('{target}', target), class: "color-error" };
                 }
 
                 case 'cat': {
@@ -239,25 +249,23 @@
                         if (fileName.endsWith(".link")) {
                             return `Opening link: ${content}`;
                         }
-                        // 🔥 MEJORA: Devolver un objeto especial para que appendOutput sepa que debe animarlo
                         return { text: content, animate: true }; 
                     }
-                    return { text: `Error: cat: ${fileName}: No such file.`, class: "color-error" };
+                    return { text: i18n.errFile.replace('{target}', fileName), class: "color-error" };
                 }
 
                 case 'clear':
                     output.innerHTML = "";
-                    return "Terminal cleared.";
+                    return "clear";
 
                 default:
-                    return { text: `Error: Command not found: ${cmd}`, class: "color-error" };
+                    return { text: `${i18n.errCmd}${cmd}`, class: "color-error" };
             }
         };
 
-        // 🔥 AÑADIDO: Función para simular el tecleo (efecto máquina de escribir)
         const typeWriterEffect = (element, text, speed = 10) => {
             isTyping = true;
-            input.disabled = true; // Deshabilita input mientras escribe
+            input.disabled = true;
             let i = 0;
             element.textContent = "";
             
@@ -277,39 +285,35 @@
         };
 
         const appendOutput = (command, result) => {
+            if (result === "clear") return;
+
             const line = document.createElement("p");
             line.className = "prompt-line";
-
             const path = fileSystem.currentDir === "~" ? "~" : fileSystem.currentDir;
             
             line.innerHTML = `<span class="prompt-user">guest@pablo-sec:${path}$</span> ${command}`; 
             output.appendChild(line);
 
-            // Manejar si el resultado es un string normal o un objeto con opciones (clases, animaciones)
             let resultText = typeof result === 'string' ? result : result.text;
             let resultClass = typeof result === 'object' && result.class ? result.class : "";
             let shouldAnimate = typeof result === 'object' && result.animate;
 
-            if (resultText && command !== 'clear') {
+            if (resultText) {
                 const res = document.createElement("p");
                 if (resultClass) res.classList.add(resultClass);
                 res.style.marginLeft = "10px";
-                
                 output.appendChild(res);
 
-                // 🔥 AÑADIDO: Si requiere animación (ej. cat README.txt), llamamos al efecto
                 if (shouldAnimate) {
                     typeWriterEffect(res, resultText);
                 } else {
                     res.textContent = resultText;
                 }
             }
-
             output.scrollTop = output.scrollHeight;
         };
 
         input.addEventListener('keydown', (e) => {
-            // Bloquear input si está en medio de una animación de tecleo
             if (isTyping) {
                 e.preventDefault();
                 return;
@@ -317,8 +321,8 @@
 
             if (e.key === "Enter") {
                 e.preventDefault();
-
                 const command = input.value.trim();
+                
                 if (command.length === 0) {
                     appendOutput('', ''); 
                     input.value = "";
@@ -366,10 +370,10 @@
             }
         });
 
-        terminalWrapper.addEventListener("click", (e) => {
+        terminalWrapper.addEventListener("click", () => {
             const selection = window.getSelection();
             if (!selection || selection.toString().length === 0) {
-                 if(!isTyping) input.focus(); // Solo enfoca si no está escribiendo solo
+                if(!isTyping) input.focus();
             }
         });
         
