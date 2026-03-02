@@ -4,6 +4,12 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
+// --- LÓGICA DE TÍTULO SIN ESPACIOS ---
+const rawTitle = t('projects.section.title'); 
+// .replace(/\s+/g, '') elimina cualquier espacio accidental en tu archivo JSON
+const cleanTitle = rawTitle.replace(/\s+/g, ''); 
+const titleParts = cleanTitle.split('_');
+
 const trabajos = [
     {
         title: 'Star WikiWars',
@@ -45,7 +51,11 @@ const getTechColor = (tech: string) => {
 ---
 
 <div class="trabajos-wrapper-outer">
-    <h2 class="glitch-text">{t('projects.section.title')}</h2>
+    <h2 class="glitch-text">{
+        titleParts.map((part, index) => (
+            <>{part}{index < titleParts.length - 1 && <span>_</span>}<wbr /></>
+        ))
+    }</h2>
     
     <div class="trabajos-container">
         {trabajos.map((trabajo, index) => (
@@ -96,7 +106,6 @@ const getTechColor = (tech: string) => {
 </div>
 
 <style>
-    /* --- CONTENEDOR PRINCIPAL --- */
     .trabajos-wrapper-outer {
         max-width: 1200px;
         margin: 80px auto;
@@ -104,27 +113,38 @@ const getTechColor = (tech: string) => {
         font-family: 'Courier New', monospace;
     }
 
+    /* --- ESTILO DE TÍTULO TIPO TERMINAL --- */
     .glitch-text {
         font-size: 2.5rem;
         font-weight: bold;
-        letter-spacing: 7px;
-        color: var(--text-primary);
+        /* Reducido a 4px para que no parezca que hay espacios entre letras */
+        letter-spacing: 4px; 
+        color: var(--primary-color);
         text-shadow: 0 0 10px var(--primary-color);
         text-align: center;
-        padding-bottom: 25px;
+        margin-bottom: 40px;
+        line-height: 1.1;
+        display: block;
+        /* Esto permite que el <wbr> funcione correctamente */
+        word-wrap: break-word; 
+        overflow-wrap: break-word;
     }
 
-    /* --- GRID SISTEMA --- */
+    /* El guion bajo hereda el brillo */
+    .glitch-text span {
+        color: var(--primary-color);
+        display: inline-block;
+    }
+
+    /* --- GRID --- */
     .trabajos-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr); 
         gap: 2.5rem;
-        perspective: 2000px; /* Intensidad del efecto 3D */
+        perspective: 2000px; 
     }
 
-    /* --- LÓGICA DE GIRO (FLIP) --- */
     .flip-card {
-        background-color: transparent;
         height: 520px;
         width: 100%;
     }
@@ -137,15 +157,12 @@ const getTechColor = (tech: string) => {
         transform-style: preserve-3d;
     }
 
-    .is-flipped {
-        transform: rotateY(180deg);
-    }
+    .is-flipped { transform: rotateY(180deg); }
 
     .flip-card-front, .flip-card-back {
         position: absolute;
         width: 100%;
         height: 100%;
-        -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
         border-radius: 4px;
         border: 1px solid rgba(0, 255, 0, 0.2);
@@ -154,39 +171,18 @@ const getTechColor = (tech: string) => {
         overflow: hidden;
     }
 
-    /* --- ESTILOS CARA FRONTAL --- */
-    .flip-card-front {
-        background-color: var(--bg-dark-light);
-    }
+    .flip-card-front { background-color: var(--bg-dark-light, #0c0c1a); }
+    .image-header { height: 200px; overflow: hidden; border-bottom: 1px solid rgba(0, 255, 0, 0.1); }
+    .imagen-trabajo { width: 100%; height: 100%; object-fit: cover; }
 
-    .image-header {
-        height: 200px;
-        overflow: hidden;
-        border-bottom: 1px solid rgba(0, 255, 0, 0.1);
-    }
-
-    .imagen-trabajo {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: 0.5s;
-    }
-
-    .card-body {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-    }
-
+    .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
     .card-body h3 { color: #fff; font-size: 1.4rem; margin: 0 0 0.5rem 0; }
-    .descripcion { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .descripcion { color: var(--text-secondary, #a0a0a0); font-size: 0.9rem; margin-bottom: 1.5rem; }
 
     .tecnologias { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
     .tech-badge { padding: 4px 10px; border-radius: 2px; display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
     .tech-icon { width: 14px; height: 14px; }
 
-    /* --- ESTILOS CARA TRASERA --- */
     .flip-card-back {
         background-color: #080808;
         transform: rotateY(180deg);
@@ -194,94 +190,32 @@ const getTechColor = (tech: string) => {
         border-color: var(--primary-color);
     }
 
-    .details-content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .details-title {
-        color: var(--primary-color);
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid rgba(0, 255, 0, 0.2);
-        padding-bottom: 5px;
-    }
-
-    .scroll-area {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding-right: 5px;
-    }
-
-    /* Scrollbar minimalista */
-    .scroll-area::-webkit-scrollbar { width: 4px; }
-    .scroll-area::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
-
+    .details-content { height: 100%; display: flex; flex-direction: column; }
+    .details-title { color: var(--primary-color); font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(0, 255, 0, 0.2); padding-bottom: 5px; }
+    .scroll-area { flex-grow: 1; overflow-y: auto; }
     .details-text { font-size: 0.85rem; line-height: 1.6; color: #ddd; }
 
-    .action-links {
-        display: flex;
-        justify-content: space-between;
-        margin: 1.5rem 0;
-    }
+    .action-links { display: flex; justify-content: space-between; margin: 1.5rem 0; }
+    .action-links a { color: var(--primary-color); text-decoration: none; font-size: 0.8rem; font-weight: bold; }
 
-    .action-links a {
-        color: var(--primary-color);
-        text-decoration: none;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-
-    /* --- BOTONES --- */
-    .flip-btn, .back-btn {
-        width: 100%;
-        padding: 12px;
-        cursor: pointer;
-        font-family: inherit;
-        font-weight: bold;
-        transition: 0.3s;
-        background: transparent;
-    }
-
-    .flip-btn {
-        border: 1px solid var(--primary-color);
-        color: var(--primary-color);
-        margin-top: auto;
-    }
-
+    .flip-btn, .back-btn { width: 100%; padding: 12px; cursor: pointer; font-family: inherit; font-weight: bold; transition: 0.3s; background: transparent; }
+    .flip-btn { border: 1px solid var(--primary-color); color: var(--primary-color); margin-top: auto; }
     .flip-btn:hover { background: var(--primary-color); color: #000; }
-
-    .back-btn {
-        border: 1px solid #ff4444;
-        color: #ff4444;
-    }
-
+    .back-btn { border: 1px solid #ff4444; color: #ff4444; }
     .back-btn:hover { background: #ff4444; color: #fff; }
 
-    /* --- MODO CLARO --- */
-    html.light-mode .flip-card-front { background: #ffffff; border-color: #ddd; }
-    html.light-mode .flip-card-front h3 { color: #222; }
-    html.light-mode .flip-card-back { background: #f5f5f5; border-color: #ccc; }
-    html.light-mode .details-text { color: #444; }
-
-    /* --- RESPONSIVE (CELULAR Y TABLET) --- */
+    /* --- RESPONSIVE --- */
     @media (max-width: 1024px) {
         .trabajos-container { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 768px) {
-        .trabajos-wrapper-outer { margin: 40px auto; }
-        
-        .glitch-text { font-size: 1.8rem; margin-bottom: 2.5rem; }
-
-        .trabajos-container { 
-            grid-template-columns: 1fr; /* Una tarjeta debajo de otra */
-            gap: 2rem;
+        .glitch-text { 
+            /* En móvil mantenemos el tamaño pero pegamos un poco más las letras */
+            font-size: 2.2rem; 
+            letter-spacing: 2px; 
         }
-
-        .flip-card {
-            height: 480px; /* Altura optimizada para móviles */
-        }
+        .trabajos-container { grid-template-columns: 1fr; }
+        .flip-card { height: 480px; }
     }
 </style>
