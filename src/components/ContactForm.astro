@@ -1,0 +1,434 @@
+---
+// src/components/ContactForm.astro
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang } = Astro.props;
+const currentLang = lang ?? getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang as any);
+
+const rawTitle   = t('contact.section.title');
+const cleanTitle = rawTitle.replace(/\s+/g, '');
+const titleParts = cleanTitle.split('_');
+---
+
+<section id="contact" class="contact-section">
+  <div class="contact-wrapper">
+
+    <div class="contact-header" data-aos="fade-up">
+      <span class="section-label">{t('contact.section.label')}</span>
+      <h2 class="glitch-text">
+        {titleParts.map((part: string, index: number) => (
+          <>{part}{index < titleParts.length - 1 && <span>_</span>}<wbr /></>
+        ))}
+      </h2>
+      <p class="section-subtitle">{t('contact.section.subtitle')}</p>
+    </div>
+
+    <div class="terminal-form-container" data-aos="fade-up" data-aos-delay="100">
+      <div class="terminal-topbar">
+        <div class="terminal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="terminal-title">pablo@portfolio:~/contact$</span>
+        <span class="terminal-title dim">bash</span>
+      </div>
+
+      <div id="cf-success" class="cf-feedback cf-success" role="alert" aria-live="polite" hidden>
+        <span class="cf-feedback-text">{t('contact.success')}</span>
+      </div>
+      <div id="cf-error" class="cf-feedback cf-error" role="alert" aria-live="polite" hidden>
+        <span id="cf-error-text" class="cf-feedback-text"></span>
+      </div>
+
+      <form id="contact-form" class="cf-form" novalidate autocomplete="off">
+
+        <div class="cf-honeypot" aria-hidden="true">
+          <input type="text" name="website" id="cf-website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="cf-row">
+          <div class="cf-group">
+            <label class="cf-label" for="cf-name">
+              <span class="prompt">$</span> {t('contact.field.name')}<span class="req">*</span>
+            </label>
+            <input type="text" id="cf-name" name="name" class="cf-input"
+              placeholder={t('contact.field.name.placeholder')}
+              required minlength="2" maxlength="60"
+              autocomplete="name" aria-describedby="cf-name-error" data-validate="name" />
+            <span id="cf-name-error" class="cf-field-error" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="cf-group">
+            <label class="cf-label" for="cf-email">
+              <span class="prompt">$</span> {t('contact.field.email')}<span class="req">*</span>
+            </label>
+            <input type="email" id="cf-email" name="email" class="cf-input"
+              placeholder={t('contact.field.email.placeholder')}
+              required maxlength="100"
+              autocomplete="email" aria-describedby="cf-email-error" data-validate="email" />
+            <span id="cf-email-error" class="cf-field-error" role="alert" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <div class="cf-group">
+          <label class="cf-label" for="cf-subject">
+            <span class="prompt">$</span> {t('contact.field.subject')}<span class="req">*</span>
+          </label>
+          <input type="text" id="cf-subject" name="subject" class="cf-input"
+            placeholder={t('contact.field.subject.placeholder')}
+            required minlength="3" maxlength="100"
+            aria-describedby="cf-subject-error" data-validate="subject" />
+          <span id="cf-subject-error" class="cf-field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="cf-group">
+          <label class="cf-label" for="cf-message">
+            <span class="prompt">$</span> {t('contact.field.message')}<span class="req">*</span>
+          </label>
+          <textarea id="cf-message" name="message" class="cf-input cf-textarea"
+            placeholder={t('contact.field.message.placeholder')}
+            required minlength="10" maxlength="2000" rows="5"
+            aria-describedby="cf-message-error cf-char-count" data-validate="message"></textarea>
+          <div class="cf-textarea-footer">
+            <span id="cf-message-error" class="cf-field-error" role="alert" aria-live="polite"></span>
+            <span id="cf-char-count" class="cf-char-count" aria-live="polite">0 / 2000</span>
+          </div>
+        </div>
+
+        <div class="cf-actions">
+          <span class="cf-rate-info">{t('contact.rate.info')}</span>
+          <button type="submit" id="cf-submit" class="cf-submit-btn">
+            <span class="cf-btn-text">{t('contact.btn.send')}</span>
+            <span class="cf-btn-loading" hidden>
+              <span class="cf-blink">▋</span>{t('contact.btn.sending')}
+            </span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-section {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 20px;
+    font-family: 'Courier New', monospace;
+  }
+  .contact-header { text-align: center; margin-bottom: 40px; }
+  .section-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    opacity: 0.65;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .glitch-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px var(--primary-color);
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1.1;
+    display: block;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .glitch-text span { color: var(--primary-color); display: inline-block; }
+  .section-subtitle { color: var(--text-secondary); font-size: 0.92rem; opacity: 0.7; margin: 0; }
+
+  .terminal-form-container {
+    border: 1px solid rgba(0, 255, 0, 0.25);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.07);
+    background-color: #0c0c1a;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .terminal-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #1a1a2e;
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.15);
+    user-select: none;
+  }
+  .terminal-dots { display: flex; gap: 7px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .red    { background-color: #ff5f56; }
+  .yellow { background-color: #ffbd2e; }
+  .green  { background-color: #27c93f; }
+  .terminal-title { font-size: 0.78rem; color: var(--primary-color); opacity: 0.65; }
+  .dim { opacity: 0.25; margin-left: auto; }
+
+  .cf-feedback {
+    margin: 16px 20px 0;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    border: 1px solid;
+    font-family: 'Courier New', monospace;
+  }
+  .cf-success { background: rgba(0,255,0,0.05); border-color: rgba(0,255,0,0.3); color: var(--primary-color); }
+  .cf-error   { background: rgba(255,68,68,0.06); border-color: rgba(255,68,68,0.3); color: #ff4444; }
+  [hidden] { display: none !important; }
+
+  .cf-honeypot {
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; opacity: 0; pointer-events: none; left: -9999px;
+  }
+  .cf-form {
+    padding: 22px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+  }
+  .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cf-group { display: flex; flex-direction: column; gap: 6px; }
+  .cf-label { font-size: 0.78rem; color: var(--primary-color); opacity: 0.8; display: flex; align-items: center; gap: 5px; }
+  .prompt { color: #66ccff; font-weight: bold; }
+  .req    { color: #ff4444; font-size: 0.7rem; }
+
+  .cf-input {
+    background: rgba(0,255,0,0.02);
+    border: 1px solid rgba(0,255,0,0.2);
+    border-radius: 4px;
+    color: var(--primary-color);
+    font-size: 0.88rem;
+    padding: 9px 12px;
+    font-family: 'Courier New', monospace;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    caret-color: var(--primary-color);
+  }
+  .cf-input::placeholder { color: rgba(0,255,0,0.25); }
+  .cf-input:focus { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(0,255,0,0.13); background: rgba(0,255,0,0.04); }
+  .cf-input.is-invalid { border-color: #ff4444; box-shadow: 0 0 6px rgba(255,68,68,0.13); }
+  .cf-input.is-valid   { border-color: rgba(0,255,0,0.55); }
+  .cf-textarea { resize: vertical; min-height: 120px; }
+
+  .cf-textarea-footer { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .cf-field-error { font-size: 0.74rem; color: #ff4444; min-height: 1em; flex: 1; }
+  .cf-char-count  { font-size: 0.7rem; color: rgba(0,255,0,0.35); white-space: nowrap; flex-shrink: 0; }
+
+  .cf-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; margin-top: 4px;
+    padding-top: 14px; border-top: 1px solid rgba(0,255,0,0.08);
+  }
+  .cf-rate-info { font-size: 0.72rem; color: rgba(0,255,0,0.35); }
+
+  .cf-submit-btn {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 10px 22px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cf-submit-btn:hover:not(:disabled) { background: var(--primary-color); color: #000; box-shadow: 0 0 14px rgba(0,255,0,0.25); }
+  .cf-submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .cf-blink { animation: blink-cur 0.75s step-end infinite; }
+  @keyframes blink-cur { 50% { opacity: 0; } }
+
+  html.light-mode .terminal-form-container { background-color: #f0f0f0; border-color: rgba(0,102,204,0.3); }
+  html.light-mode .terminal-topbar         { background-color: #e0e0e0; }
+  html.light-mode .cf-input               { background: rgba(0,102,204,0.03); border-color: rgba(0,102,204,0.25); color: var(--primary-color); }
+  html.light-mode .cf-input::placeholder  { color: rgba(0,102,204,0.35); }
+  html.light-mode .cf-input:focus         { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(0,102,204,0.13); }
+  html.light-mode .cf-input.is-valid      { border-color: rgba(0,102,204,0.5); }
+  html.light-mode .cf-success             { color: #0066cc; border-color: rgba(0,102,204,0.35); background: rgba(0,102,204,0.05); }
+  html.light-mode .cf-rate-info           { color: rgba(0,102,204,0.4); }
+  html.light-mode .cf-char-count          { color: rgba(0,102,204,0.4); }
+
+  @media (max-width: 600px) {
+    .cf-row { grid-template-columns: 1fr; }
+    .glitch-text { font-size: 2rem; letter-spacing: 2px; }
+    .cf-actions { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<!--
+  IMPORTANTE: usamos is:inline para que el script se ejecute en el navegador
+  sin que Astro lo procese con TypeScript. Así evitamos TODOS los errores de tipos.
+  Los mensajes vienen de ui.ts a través de define:vars.
+-->
+<script is:inline define:vars={{
+  msgRequired:     t('contact.validate.required'),
+  msgNameShort:    t('contact.validate.name.short'),
+  msgNameChars:    t('contact.validate.name.chars'),
+  msgEmail:        t('contact.validate.email'),
+  msgSubjectShort: t('contact.validate.subject.short'),
+  msgMessageShort: t('contact.validate.message.short'),
+  msgMax:          t('contact.validate.max'),
+  msgRate:         t('contact.error.rate'),
+  msgNetwork:      t('contact.error.network'),
+  msgDefault:      t('contact.error.default'),
+  currentLang:     currentLang,
+}}>
+  // Todos los mensajes vienen de ui.ts via define:vars — sin lógica de idioma aquí
+  const MAX_LEN = { name: 60, email: 100, subject: 100, message: 2000 };
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function sanitize(str) {
+    return str.trim()
+      .replace(/[<>]/g, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+=/gi, '');
+  }
+
+  function validateField(name, value) {
+    const v = sanitize(value);
+    if (!v) return msgRequired;
+    if (v.length > MAX_LEN[name]) return msgMax;
+    if (name === 'name') {
+      if (v.length < 2) return msgNameShort;
+      if (!/^[\p{L}\s\-'.]+$/u.test(v)) return msgNameChars;
+    }
+    if (name === 'email' && (!EMAIL_RE.test(v) || v.length > 100)) return msgEmail;
+    if (name === 'subject' && v.length < 3) return msgSubjectShort;
+    if (name === 'message' && v.length < 10) return msgMessageShort;
+    return null;
+  }
+
+  function setFieldState(input, error) {
+    const el = document.getElementById('cf-' + input.name + '-error');
+    input.classList.toggle('is-invalid', !!error);
+    input.classList.toggle('is-valid', !error && input.value.trim().length > 0);
+    if (el) el.textContent = error !== null ? error : '';
+  }
+
+  const RATE_MS = 5 * 60 * 1000;
+  function isRateLimited() {
+    try {
+      const l = localStorage.getItem('cf_last_sent');
+      return !!l && (Date.now() - Number(l)) < RATE_MS;
+    } catch { return false; }
+  }
+  function markSent() {
+    try { localStorage.setItem('cf_last_sent', String(Date.now())); } catch { /* noop */ }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var form       = /** @type {HTMLFormElement} */        (document.getElementById('contact-form'));
+    var submitBtn  = /** @type {HTMLButtonElement} */      (document.getElementById('cf-submit'));
+    var btnText    = /** @type {HTMLElement} */            (submitBtn && submitBtn.querySelector('.cf-btn-text'));
+    var btnLoading = /** @type {HTMLElement} */            (submitBtn && submitBtn.querySelector('.cf-btn-loading'));
+    var successMsg = /** @type {HTMLElement} */            (document.getElementById('cf-success'));
+    var errorMsg   = /** @type {HTMLElement} */            (document.getElementById('cf-error'));
+    var errorText  = /** @type {HTMLElement} */            (document.getElementById('cf-error-text'));
+    var textarea   = /** @type {HTMLTextAreaElement} */    (document.getElementById('cf-message'));
+    var charCount  = /** @type {HTMLElement} */            (document.getElementById('cf-char-count'));
+
+    if (!form || !submitBtn || !btnText || !btnLoading || !successMsg || !errorMsg || !errorText || !textarea || !charCount) return;
+
+    textarea.addEventListener('input', function () {
+      var len = textarea.value.length;
+      charCount.textContent = len + ' / 2000';
+      charCount.style.color = len > 1800 ? '#ff4444' : '';
+    });
+
+    form.querySelectorAll('[data-validate]').forEach(function (el) {
+      var input = /** @type {HTMLInputElement | HTMLTextAreaElement} */ (el);
+      input.addEventListener('blur',  function () { setFieldState(input, validateField(input.name, input.value)); });
+      input.addEventListener('input', function () {
+        if (input.classList.contains('is-invalid')) setFieldState(input, validateField(input.name, input.value));
+      });
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      successMsg.hidden = true;
+      errorMsg.hidden   = true;
+
+      // Honeypot
+      var honeypotEl = /** @type {HTMLInputElement} */ (document.getElementById('cf-website'));
+      if (honeypotEl && honeypotEl.value) { successMsg.hidden = false; return; }
+
+      // Rate limit
+      if (isRateLimited()) { errorText.textContent = msgRate; errorMsg.hidden = false; return; }
+
+      // Validar campos
+      var fields = ['name', 'email', 'subject', 'message'];
+      var hasErrors = false;
+      for (var i = 0; i < fields.length; i++) {
+        var input = /** @type {HTMLInputElement | HTMLTextAreaElement} */ (form.elements.namedItem(fields[i]));
+        var err = validateField(fields[i], input.value);
+        setFieldState(input, err);
+        if (err) hasErrors = true;
+      }
+      if (hasErrors) return;
+
+      // Payload
+      var nameEl    = /** @type {HTMLInputElement} */     (form.elements.namedItem('name'));
+      var emailEl   = /** @type {HTMLInputElement} */     (form.elements.namedItem('email'));
+      var subjectEl = /** @type {HTMLInputElement} */     (form.elements.namedItem('subject'));
+      var messageEl = /** @type {HTMLTextAreaElement} */  (form.elements.namedItem('message'));
+
+      var payload = {
+        name:    sanitize(nameEl.value).slice(0, 60),
+        email:   sanitize(emailEl.value).slice(0, 100),
+        subject: sanitize(subjectEl.value).slice(0, 100),
+        message: sanitize(messageEl.value).slice(0, 2000),
+        lang:    currentLang,
+      };
+
+      submitBtn.disabled  = true;
+      btnText.hidden      = true;
+      btnLoading.hidden   = false;
+
+      try {
+        var res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type':    'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        var data = await res.json().catch(function () { return {}; });
+
+        if (res.ok) {
+          markSent();
+          form.reset();
+          charCount.textContent = '0 / 2000';
+          form.querySelectorAll('.is-valid').forEach(function (el) { el.classList.remove('is-valid'); });
+          successMsg.hidden = false;
+          successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          errorText.textContent = data.error || data.message || msgDefault;
+          errorMsg.hidden = false;
+        }
+      } catch (fetchErr) {
+        errorText.textContent = msgNetwork;
+        errorMsg.hidden = false;
+      } finally {
+        submitBtn.disabled = false;
+        btnText.hidden     = false;
+        btnLoading.hidden  = true;
+      }
+    });
+  });
+</script>
