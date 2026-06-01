@@ -11,12 +11,12 @@ const titleParts = cleanTitle.split('_');
 
 const trabajos = [
     {
-        title: 'Star WikiWars',
-        description: t('projects.starwars.desc'),
-        image: '/Star-Wars-photo.png',
-        technologies: ['Kotlin'],
-        details: t('projects.starwars.details'),
-        github: 'https://github.com/pablo7843/StarWarsApp'
+        title: 'Star Wars Nexus',
+        description: t('projects.starwarsnexus.desc'),
+        image: '/starwars-nexus.svg',
+        technologies: ['Kotlin', 'Android'],
+        details: t('projects.starwarsnexus.details'),
+        github: 'https://github.com/pablo7843/StarWarsNexus'
     },
     {
         title: 'Qr-Shield',
@@ -27,21 +27,29 @@ const trabajos = [
         github: 'https://github.com/pablo7843/qr_shield'
     },
     {
-        title: 'HarmoniQ',
-        description: t('projects.music.desc'),
-        image: '/harmoniq.png',
-        technologies: ['React', 'Supabase'],
-        details: t('projects.music.details'),
-        github: 'https://github.com/pablo7843/HarmoniQ'
+        title: 'SecDash',
+        description: t('projects.secdash.desc'),
+        image: '/secdash.svg',
+        technologies: ['NodeJS', 'Docker'],
+        details: t('projects.secdash.details'),
+        github: 'https://github.com/pablo7843/secdash'
     },
     {
-        title: 'HarmoniQ-v2',
-        description: t('projects.music.desc.v2'),
-        image: '/harmoniQ-v2.png',
-        technologies: ['React', 'Supabase'],
-        details: t('projects.music.details.v2'),
+        title: 'Code Security Reviewer',
+        description: t('projects.codereviewer.desc'),
+        image: '/code-reviewer.svg',
+        technologies: ['Python', 'React'],
+        details: t('projects.codereviewer.details'),
         github: '#',
         inDevelopment: true
+    },
+    {
+        title: 'Bot Discord',
+        description: t('projects.botdiscord.desc'),
+        image: '/bot-discord.svg',
+        technologies: ['Python', 'Supabase'],
+        details: t('projects.botdiscord.details'),
+        github: 'https://github.com/pablo7843/discord-bot'
     }
 ];
 
@@ -55,7 +63,11 @@ const getTechColor = (tech: string) => {
         'react': '#2784F5',
         'kotlin': '#7F52FF',
         'supabase': '#3ECF8E',
-        'flutter': '#02569B'
+        'flutter': '#02569B',
+        'android': '#3DDC84',
+        'nodejs': '#339933',
+        'docker': '#2496ED',
+        'python': '#3776AB'
     };
     return colors[tech.toLowerCase().replace(/\s+/g, '')] || '#cccccc';
 };

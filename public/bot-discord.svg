@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#1e2124"/>
+  <!-- Discord sidebar -->
+  <rect x="0" y="0" width="72" height="400" fill="#2c2f33"/>
+  <!-- Server icons in sidebar -->
+  <rect x="12" y="16" width="48" height="48" rx="24" fill="#5865F2"/>
+  <text x="36" y="47" font-family="'Courier New', monospace" font-size="20" fill="white" text-anchor="middle">B</text>
+  <rect x="12" y="76" width="48" height="48" rx="8" fill="#36393f" stroke="#5865F2" stroke-width="2" stroke-opacity="0.4"/>
+  <rect x="12" y="136" width="48" height="48" rx="8" fill="#36393f" opacity="0.5"/>
+  <rect x="12" y="196" width="48" height="48" rx="8" fill="#36393f" opacity="0.3"/>
+  <!-- Channel list -->
+  <rect x="72" y="0" width="210" height="400" fill="#2f3136"/>
+  <rect x="72" y="0" width="210" height="50" fill="#27292e"/>
+  <text x="177" y="30" font-family="'Arial', sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">Bot Discord Server</text>
+  <text x="90" y="80" font-family="'Arial', sans-serif" font-size="11" fill="#8e9297">CANALES DE TEXTO</text>
+  <text x="90" y="106" font-family="'Arial', sans-serif" font-size="13" fill="#dcddde">📅  eventos</text>
+  <text x="90" y="130" font-family="'Arial', sans-serif" font-size="13" fill="#8e9297">🔔  recordatorios</text>
+  <text x="90" y="154" font-family="'Arial', sans-serif" font-size="13" fill="#8e9297">📌  comandos</text>
+  <text x="90" y="195" font-family="'Arial', sans-serif" font-size="11" fill="#8e9297">ESTADO</text>
+  <circle cx="90" cy="220" r="6" fill="#3ba55d"/>
+  <text x="105" y="225" font-family="'Arial', sans-serif" font-size="12" fill="#dcddde">Bot activo</text>
+  <!-- Main chat area -->
+  <rect x="282" y="50" width="518" height="350" fill="#36393f"/>
+  <!-- Chat header -->
+  <rect x="282" y="50" width="518" height="46" fill="#36393f"/>
+  <line x1="282" y1="96" x2="800" y2="96" stroke="#27292e" stroke-width="1"/>
+  <text x="308" y="79" font-family="'Arial', sans-serif" font-size="14" font-weight="bold" fill="#ffffff"># eventos</text>
+  <!-- Chat messages -->
+  <circle cx="306" cy="130" r="18" fill="#5865F2"/>
+  <text x="306" y="137" font-family="'Courier New', monospace" font-size="14" fill="white" text-anchor="middle">B</text>
+  <text x="332" y="122" font-family="'Arial', sans-serif" font-size="12" font-weight="bold" fill="#5865F2">CalBot</text>
+  <text x="398" y="122" font-family="'Arial', sans-serif" font-size="11" fill="#72767d">Hoy a las 20:00</text>
+  <rect x="332" y="130" width="300" height="58" rx="4" fill="#2f3136"/>
+  <text x="346" y="150" font-family="'Arial', sans-serif" font-size="12" fill="#00b894" font-weight="bold">✅ Evento creado</text>
+  <text x="346" y="168" font-family="'Arial', sans-serif" font-size="11" fill="#dcddde">📅 Reunión de equipo</text>
+  <text x="346" y="184" font-family="'Arial', sans-serif" font-size="11" fill="#72767d">Mañana a las 18:00 (Madrid)</text>
+  <!-- Second message -->
+  <circle cx="306" cy="222" r="18" fill="#5865F2"/>
+  <text x="306" y="229" font-family="'Courier New', monospace" font-size="14" fill="white" text-anchor="middle">B</text>
+  <text x="332" y="213" font-family="'Arial', sans-serif" font-size="12" font-weight="bold" fill="#5865F2">CalBot</text>
+  <text x="398" y="213" font-family="'Arial', sans-serif" font-size="11" fill="#72767d">Hoy a las 20:01</text>
+  <rect x="332" y="220" width="350" height="42" rx="4" fill="#2f3136"/>
+  <text x="346" y="240" font-family="'Arial', sans-serif" font-size="11" fill="#dcddde">📋 Tienes 3 eventos esta semana</text>
+  <text x="346" y="257" font-family="'Arial', sans-serif" font-size="11" fill="#72767d">Usa /listar para verlos</text>
+  <!-- Input box -->
+  <rect x="295" y="355" width="488" height="36" rx="8" fill="#40444b"/>
+  <text x="315" y="377" font-family="'Arial', sans-serif" font-size="12" fill="#72767d">/crear-evento...</text>
+  <!-- Tech labels -->
+  <defs>
+    <filter id="blurple">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <text x="540" y="20" font-family="'Courier New', monospace" font-size="11" fill="#5865F2" text-anchor="middle" opacity="0.6" filter="url(#blurple)">[ PYTHON · DISCORD.PY · SUPABASE · DOCKER ]</text>
+</svg>

@@ -59,20 +59,22 @@ export const ui = {
     'projects.label.specs': 'ESPECIFICACIONES_DE_ARCHIVO',
     'projects.label.code': 'CÓDIGO 💻',
     'projects.label.demo': 'DEMO_EN_VIVO 🚀',
-    // Proyectos - Star WikiWars
-    'projects.starwars.desc': 'Wiki de Star Wars para fans',
-    'projects.starwars.details': 'Aplicación nativa de Android que utiliza la arquitectura MVVM. Desarrollada en Kotlin, consume la API pública de Star Wars (SWAPI) para mostrar datos de personajes y naves, con una alta optimización para la experiencia móvil.',
+    // Proyectos - Star Wars Nexus
+    'projects.starwarsnexus.desc': 'App Android de Star Wars con IA',
+    'projects.starwarsnexus.details': 'Aplicación Android de nivel producción construida con Jetpack Compose y Clean Architecture + MVVM. Explora 82 personajes, 60 planetas, 6 películas y 36 naves con paginación offline-first (Room + Paging 3). Incluye comparador de personajes, línea de tiempo interactiva, grafo de relaciones en Canvas y un chatbot Force Oracle con Gemini AI. Inyección de dependencias con Hilt y sincronización automática vía WorkManager.',
     // Proyectos - Qr-Shield
     'projects.qrshield.desc': 'Escáner de códigos QR seguro',
     'projects.qrshield.details': 'Escáner de QR seguro para prevenir phishing. Escanea códigos QR y verifica URLs para decidir si el código QR es seguro, sospechoso o peligroso. El usuario puede iniciar sesión para activar el historial de escaneos y gestionarlos.',
-    // Proyectos - Music web
-    'projects.music.desc': 'Reproductor de música online',
-    'projects.music.details': 'Plataforma de streaming de música construida con React para el frontend y Supabase (backend como servicio) para la autenticación y almacenamiento. Focalizada en la gestión de sesiones seguras y reproducción optimizada.',
-    
-    // Projects - HarmoniQ-v2
-    'projects.music.desc.v2': 'Reproductor de música online (v2)',
-    'projects.music.details.v2': 'Plataforma de streaming de música mejorada en proceso...',
-    
+    // Proyectos - SecDash
+    'projects.secdash.desc': 'Dashboard de threat intelligence',
+    'projects.secdash.details': 'Herramienta de threat intelligence full-stack que actúa como proxy seguro hacia VirusTotal (70+ motores) y AbuseIPDB. Analiza IPs, dominios, URLs y hashes de archivo en tiempo real. Incluye escaneo masivo de hasta 10 IPs simultáneas, puntuación de riesgo combinada 0-100, historial de los últimos 50 análisis, modo bilingüe ES/EN, shortcuts de teclado, exportación JSON y despliegue Docker. Backend en Node.js + Express con rate limiting y caché en memoria.',
+    // Proyectos - Code Security Reviewer
+    'projects.codereviewer.desc': 'Revisor de código con IA',
+    'projects.codereviewer.details': 'Herramienta de análisis de seguridad de código impulsada por inteligencia artificial. Detecta vulnerabilidades OWASP, inyecciones SQL, XSS y otros patrones de riesgo en el código fuente. Backend en Python con integración de Anthropic Claude API y frontend en React para una revisión interactiva del código. — En desarrollo.',
+    // Proyectos - Bot Discord
+    'projects.botdiscord.desc': 'Bot de eventos para Discord',
+    'projects.botdiscord.details': 'Bot de Discord para gestión de eventos y calendario en servidores. Permite crear, listar y eliminar eventos mediante slash commands modernos, con parsing de fechas en lenguaje natural (ej: "mañana a las 3pm"). Almacenamiento persistente en Supabase (PostgreSQL), soporte de zona horaria Europe/Madrid y keep-alive mediante Flask para despliegue gratuito. Contenerizado con Docker y docker-compose.',
+
     'projects.label.comingSoon': 'Próximamente...',
     'footer.status.label': 'ESTADO_DEL_SISTEMA',
     'footer.status.value': 'OPTIMIZADO',
@@ -160,18 +162,23 @@ export const ui = {
     'projects.label.specs': 'FILE_SPECIFICATIONS',
     'projects.label.code': 'CODE_LINK 💻',
     'projects.label.demo': 'LIVE_DEMO 🚀',
-    // Projects - Star WikiWars
-    'projects.starwars.desc': 'Star Wars Wiki for fans',
-    'projects.starwars.details': 'Native Android application using MVVM architecture. Developed in Kotlin, it consumes the Star Wars API (SWAPI) to show character and ship data, highly optimized for the mobile experience.',
+    // Projects - Star Wars Nexus
+    'projects.starwarsnexus.desc': 'Android Star Wars app with AI',
+    'projects.starwarsnexus.details': 'Production-grade Android app built with Jetpack Compose and Clean Architecture + MVVM. Explore 82 characters, 60 planets, 6 films and 36 starships with offline-first pagination (Room + Paging 3). Features a character comparator, interactive timeline, Canvas-rendered relationship graph and a Force Oracle AI chatbot powered by Gemini. Dependency injection with Hilt and automatic background sync via WorkManager.',
     // Projects - Qr-Shield
     'projects.qrshield.desc': 'Secure QR code scanner',
     'projects.qrshield.details': 'Secure QR scanner to prevent phishing. Scans QR codes and checks URLs to determine if the code is safe, suspicious, or dangerous. Users can sign in to activate and manage their scan history.',
-    // Projects - Music web
-    'projects.music.desc': 'Online music player',
-    'projects.music.desc.v2': 'Online music player (v2)',
-    'projects.music.details': 'Music streaming platform built with React for the frontend and Supabase (BaaS) for authentication and storage. Focused on secure session management and optimized playback.',
-    'projects.music.details.v2': 'Improved music streaming platform in progress...',
-    'projects.label.comingSoon': 'Comming soon...',
+    // Projects - SecDash
+    'projects.secdash.desc': 'Threat intelligence dashboard',
+    'projects.secdash.details': 'Full-stack threat intelligence tool acting as a secure proxy to VirusTotal (70+ engines) and AbuseIPDB. Analyzes IPs, domains, URLs and file hashes in real time. Features bulk scanning of up to 10 IPs simultaneously, a combined 0-100 risk score, history of the last 50 analyses, bilingual ES/EN mode, keyboard shortcuts, JSON export and Docker deployment. Node.js + Express backend with rate limiting and in-memory caching.',
+    // Projects - Code Security Reviewer
+    'projects.codereviewer.desc': 'AI-powered code reviewer',
+    'projects.codereviewer.details': 'AI-powered code security analysis tool. Detects OWASP vulnerabilities, SQL injection, XSS and other risk patterns in source code. Python backend with Anthropic Claude API integration and a React frontend for interactive code review. — In development.',
+    // Projects - Bot Discord
+    'projects.botdiscord.desc': 'Discord event management bot',
+    'projects.botdiscord.details': 'Discord bot for event and calendar management in servers. Create, list and delete events via modern slash commands with natural language date parsing (e.g. "tomorrow at 3pm"). Persistent storage in Supabase (PostgreSQL), Europe/Madrid timezone support and Flask-based keep-alive for free-tier deployment. Containerized with Docker and docker-compose.',
+
+    'projects.label.comingSoon': 'Coming soon...',
     'footer.status.label': 'SYSTEM_STATUS',
     'footer.status.value': 'OPTIMIZED',
     'footer.encryption.label': 'ENCRYPTION',
