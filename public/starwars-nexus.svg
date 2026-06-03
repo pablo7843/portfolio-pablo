@@ -24,24 +24,50 @@
   <circle cx="550" cy="355" r="1.1" fill="white" opacity="0.75"/>
   <circle cx="680" cy="340" r="0.9" fill="white" opacity="0.65"/>
   <circle cx="760" cy="370" r="1.4" fill="white" opacity="0.85"/>
-  <!-- Glow circle center -->
-  <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#FFD700" stop-opacity="0.12"/>
-    <stop offset="100%" stop-color="#0a0e27" stop-opacity="0"/>
-  </radialGradient>
-  <ellipse cx="400" cy="200" rx="280" ry="160" fill="url(#centerGlow)"/>
-  <!-- Lightsaber top blue -->
-  <line x1="160" y1="155" x2="640" y2="155" stroke="#4285F4" stroke-width="1.5" opacity="0.4"/>
-  <!-- "STAR WARS" title -->
-  <text x="400" y="210" font-family="'Courier New', monospace" font-size="56" font-weight="bold" fill="#FFD700" text-anchor="middle" letter-spacing="8" filter="url(#glow)">STAR WARS</text>
-  <!-- Subtitle -->
-  <text x="400" y="248" font-family="'Courier New', monospace" font-size="22" fill="#7F52FF" text-anchor="middle" letter-spacing="16">N E X U S</text>
-  <!-- Divider line -->
-  <line x1="160" y1="268" x2="640" y2="268" stroke="#4285F4" stroke-width="1.5" opacity="0.4"/>
-  <!-- Tag line -->
-  <text x="400" y="300" font-family="'Courier New', monospace" font-size="12" fill="#00ff00" text-anchor="middle" opacity="0.7">[ KOTLIN · JETPACK COMPOSE · CLEAN ARCHITECTURE ]</text>
-  <!-- Glow filter -->
+  <circle cx="700" cy="170" r="0.8" fill="white" opacity="0.5"/>
+  <circle cx="760" cy="200" r="1.0" fill="white" opacity="0.6"/>
+  <circle cx="730" cy="250" r="0.7" fill="white" opacity="0.4"/>
+  <circle cx="50" cy="200" r="0.9" fill="white" opacity="0.55"/>
+  <circle cx="20" cy="160" r="1.1" fill="white" opacity="0.7"/>
+
+  <!-- "A long time ago..." -->
+  <text x="400" y="28" font-family="Georgia, 'Times New Roman', serif" font-size="11" fill="#4a6a9a" text-anchor="middle" font-style="italic" opacity="0.75">A long time ago in a galaxy far, far away....</text>
+
+  <!-- Death Star (top right) -->
+  <circle cx="698" cy="88" r="58" fill="#1a1f35" stroke="#aabbcc" stroke-width="1.2" opacity="0.35"/>
+  <line x1="640" y1="88" x2="756" y2="88" stroke="#aabbcc" stroke-width="0.8" opacity="0.25"/>
+  <!-- Superlaser dish -->
+  <circle cx="674" cy="66" r="14" fill="none" stroke="#aabbcc" stroke-width="1" opacity="0.3"/>
+  <circle cx="674" cy="66" r="6" fill="#aabbcc" opacity="0.18"/>
+  <!-- Hemisphere lines on lower half -->
+  <path d="M 645 100 Q 698 124 751 100" stroke="#aabbcc" stroke-width="0.6" fill="none" opacity="0.2"/>
+  <path d="M 648 112 Q 698 138 748 112" stroke="#aabbcc" stroke-width="0.4" fill="none" opacity="0.12"/>
+
+  <!-- TIE Fighter silhouette (top left) -->
+  <!-- Cockpit ball -->
+  <circle cx="98" cy="85" r="18" fill="none" stroke="#aabbcc" stroke-width="1.2" opacity="0.35"/>
+  <circle cx="98" cy="85" r="10" fill="#1a1f35" stroke="#aabbcc" stroke-width="0.8" opacity="0.3"/>
+  <!-- Left strut -->
+  <line x1="80" y1="85" x2="52" y2="85" stroke="#aabbcc" stroke-width="1" opacity="0.3"/>
+  <!-- Right strut -->
+  <line x1="116" y1="85" x2="144" y2="85" stroke="#aabbcc" stroke-width="1" opacity="0.3"/>
+  <!-- Left solar panel (hexagon approx) -->
+  <polygon points="28,62 52,62 52,108 28,108" fill="none" stroke="#aabbcc" stroke-width="1.2" opacity="0.3"/>
+  <line x1="28" y1="85" x2="52" y2="85" stroke="#aabbcc" stroke-width="0.5" opacity="0.2"/>
+  <line x1="36" y1="62" x2="36" y2="108" stroke="#aabbcc" stroke-width="0.4" opacity="0.15"/>
+  <line x1="44" y1="62" x2="44" y2="108" stroke="#aabbcc" stroke-width="0.4" opacity="0.15"/>
+  <!-- Right solar panel -->
+  <polygon points="144,62 168,62 168,108 144,108" fill="none" stroke="#aabbcc" stroke-width="1.2" opacity="0.3"/>
+  <line x1="144" y1="85" x2="168" y2="85" stroke="#aabbcc" stroke-width="0.5" opacity="0.2"/>
+  <line x1="152" y1="62" x2="152" y2="108" stroke="#aabbcc" stroke-width="0.4" opacity="0.15"/>
+  <line x1="160" y1="62" x2="160" y2="108" stroke="#aabbcc" stroke-width="0.4" opacity="0.15"/>
+
+  <!-- Defs: glow filters and gradients -->
   <defs>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#0a0e27" stop-opacity="0"/>
+    </radialGradient>
     <filter id="glow">
       <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
       <feMerge>
@@ -49,5 +75,49 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <filter id="subtleGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
+  <ellipse cx="400" cy="210" rx="280" ry="160" fill="url(#centerGlow)"/>
+
+  <!-- Star Wars logo - top wedge shape -->
+  <!-- The iconic "wings" flanking the logo -->
+  <polygon points="175,148 240,148 220,165 175,165" fill="#FFD700" fill-opacity="0.08" stroke="#FFD700" stroke-width="0.5" stroke-opacity="0.3"/>
+  <polygon points="625,148 560,148 580,165 625,165" fill="#FFD700" fill-opacity="0.08" stroke="#FFD700" stroke-width="0.5" stroke-opacity="0.3"/>
+
+  <!-- Lightsaber divider top -->
+  <line x1="160" y1="158" x2="640" y2="158" stroke="#4285F4" stroke-width="1.2" opacity="0.35"/>
+
+  <!-- STAR WARS title - bold logo style -->
+  <text x="400" y="218" font-family="'Arial Black', 'Impact', sans-serif" font-size="60" font-weight="900" fill="#FFD700" text-anchor="middle" letter-spacing="6" filter="url(#glow)">STAR WARS</text>
+
+  <!-- Subtitle NEXUS -->
+  <text x="400" y="256" font-family="'Courier New', monospace" font-size="22" fill="#7F52FF" text-anchor="middle" letter-spacing="18" filter="url(#subtleGlow)">N E X U S</text>
+
+  <!-- Divider line -->
+  <line x1="160" y1="274" x2="640" y2="274" stroke="#4285F4" stroke-width="1.2" opacity="0.35"/>
+
+  <!-- Rebel Alliance symbol (simplified starburst) -->
+  <!-- Center circle -->
+  <circle cx="400" cy="315" r="22" fill="none" stroke="#FFD700" stroke-width="1.2" opacity="0.45"/>
+  <circle cx="400" cy="315" r="14" fill="none" stroke="#FFD700" stroke-width="0.8" opacity="0.3"/>
+  <!-- Starbird wings (4 spikes top+bottom, 2 sides) -->
+  <line x1="400" y1="290" x2="400" y2="283" stroke="#FFD700" stroke-width="1.5" opacity="0.5"/>
+  <line x1="400" y1="340" x2="400" y2="347" stroke="#FFD700" stroke-width="1.5" opacity="0.5"/>
+  <line x1="375" y1="315" x2="368" y2="315" stroke="#FFD700" stroke-width="1.5" opacity="0.5"/>
+  <line x1="425" y1="315" x2="432" y2="315" stroke="#FFD700" stroke-width="1.5" opacity="0.5"/>
+  <line x1="382" y1="298" x2="377" y2="293" stroke="#FFD700" stroke-width="1.2" opacity="0.4"/>
+  <line x1="418" y1="298" x2="423" y2="293" stroke="#FFD700" stroke-width="1.2" opacity="0.4"/>
+  <line x1="382" y1="332" x2="377" y2="337" stroke="#FFD700" stroke-width="1.2" opacity="0.4"/>
+  <line x1="418" y1="332" x2="423" y2="337" stroke="#FFD700" stroke-width="1.2" opacity="0.4"/>
+  <!-- Inner dot -->
+  <circle cx="400" cy="315" r="4" fill="#FFD700" opacity="0.55"/>
+
+  <!-- Tech line -->
+  <text x="400" y="380" font-family="'Courier New', monospace" font-size="11" fill="#00ff00" text-anchor="middle" opacity="0.6">[ KOTLIN · JETPACK COMPOSE · CLEAN ARCHITECTURE ]</text>
 </svg>

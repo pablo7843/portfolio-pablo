@@ -75,6 +75,10 @@ export const ui = {
     'projects.botdiscord.desc': 'Bot de eventos para Discord',
     'projects.botdiscord.details': 'Bot de Discord para gestión de eventos y calendario en servidores. Permite crear, listar y eliminar eventos mediante slash commands modernos, con parsing de fechas en lenguaje natural (ej: "mañana a las 3pm"). Almacenamiento persistente en Supabase (PostgreSQL), soporte de zona horaria Europe/Madrid y keep-alive mediante Flask para despliegue gratuito. Contenerizado con Docker y docker-compose.',
 
+    // Proyectos - Shrtn.io
+    'projects.shrtnio.desc': 'Acortador de URLs full-stack',
+    'projects.shrtnio.details': 'Acortador de URLs full-stack con sistema de usuarios, autenticación JWT y gráficos de tráfico en tiempo real. Cada usuario gestiona su propio espacio privado de links con estadísticas de clics detalladas por visita. Incluye códigos personalizados, página de perfil, soporte bilingüe ES/EN y sistema de seguridad con bcrypt + pre-hash SHA-256, rate limiting y security headers. Backend en FastAPI (Python) con SQLite y frontend en Vanilla JS con Tailwind CSS.',
+
     'projects.label.comingSoon': 'Próximamente...',
     'footer.status.label': 'ESTADO_DEL_SISTEMA',
     'footer.status.value': 'OPTIMIZADO',
@@ -177,6 +181,10 @@ export const ui = {
     // Projects - Bot Discord
     'projects.botdiscord.desc': 'Discord event management bot',
     'projects.botdiscord.details': 'Discord bot for event and calendar management in servers. Create, list and delete events via modern slash commands with natural language date parsing (e.g. "tomorrow at 3pm"). Persistent storage in Supabase (PostgreSQL), Europe/Madrid timezone support and Flask-based keep-alive for free-tier deployment. Containerized with Docker and docker-compose.',
+
+    // Projects - Shrtn.io
+    'projects.shrtnio.desc': 'Full-stack URL shortener',
+    'projects.shrtnio.details': 'Full-stack URL shortener with user management, JWT authentication and real-time traffic charts. Each user manages their own private link space with detailed per-visit click stats. Features custom short codes, profile page, bilingual ES/EN support and security hardening with bcrypt + SHA-256 pre-hash, rate limiting and security headers. FastAPI (Python) backend with SQLite and Vanilla JS + Tailwind CSS frontend.',
 
     'projects.label.comingSoon': 'Coming soon...',
     'footer.status.label': 'SYSTEM_STATUS',

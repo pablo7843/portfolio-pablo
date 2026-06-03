@@ -21,7 +21,7 @@ const trabajos = [
     {
         title: 'Qr-Shield',
         description: t('projects.qrshield.desc'),
-        image: '/qr-shield.png',
+        image: '/qr-shield.svg',
         technologies: ['Flutter', 'Supabase'],
         details: t('projects.qrshield.details'),
         github: 'https://github.com/pablo7843/qr_shield'
@@ -50,6 +50,14 @@ const trabajos = [
         technologies: ['Python', 'Supabase'],
         details: t('projects.botdiscord.details'),
         github: 'https://github.com/pablo7843/discord-bot'
+    },
+    {
+        title: 'Shrtn.io',
+        description: t('projects.shrtnio.desc'),
+        image: '/shrtn-io.svg',
+        technologies: ['Python', 'FastAPI'],
+        details: t('projects.shrtnio.details'),
+        github: 'https://github.com/pablo7843/shrtn.io'
     }
 ];
 
@@ -67,7 +75,8 @@ const getTechColor = (tech: string) => {
         'android': '#3DDC84',
         'nodejs': '#339933',
         'docker': '#2496ED',
-        'python': '#3776AB'
+        'python': '#3776AB',
+        'fastapi': '#009688'
     };
     return colors[tech.toLowerCase().replace(/\s+/g, '')] || '#cccccc';
 };
