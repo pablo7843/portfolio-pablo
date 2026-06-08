@@ -4,52 +4,79 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-// --- LÓGICA DE TÍTULO SIN ESPACIOS ---
 const rawTitle = t('tech.section.title');
-// Eliminamos cualquier espacio accidental y dividimos por el guion bajo
-const cleanTitle = rawTitle.replace(/\s+/g, ''); 
+const cleanTitle = rawTitle.replace(/\s+/g, '');
 const titleParts = cleanTitle.split('_');
 
-const categories = [
+const D = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons';
+
+const levelLabels = lang === 'es'
+  ? ['Básico', 'Intermedio', 'Avanzado', 'Experto']
+  : ['Basic', 'Intermediate', 'Advanced', 'Expert'];
+
+interface Tech {
+  name: string;
+  icon: string | null;
+  level: number;
+  desc: string;
+}
+
+interface Category {
+  title: string;
+  accent: string;
+  headerIcon: string;
+  techs: Tech[];
+}
+
+const categories: Category[] = [
   {
     title: t('tech.cat.frontend'),
-    icon: "💻",
+    accent: '#61DAFB',
+    headerIcon: `${D}/react/react-original.svg`,
     techs: [
-      { name: "React / Angular", desc: t('tech.desc.react') },
-      { name: "Kotlin", desc: t('tech.desc.kotlin') },
-      { name: "HTML5 & CSS3", desc: t('tech.desc.html') }
+      { name: "React / Angular", icon: `${D}/react/react-original.svg`,   level: 3, desc: t('tech.desc.react')  },
+      { name: "Kotlin",          icon: `${D}/kotlin/kotlin-original.svg`,  level: 3, desc: t('tech.desc.kotlin') },
+      { name: "HTML5 & CSS3",    icon: `${D}/html5/html5-original.svg`,    level: 4, desc: t('tech.desc.html')   },
     ]
   },
   {
     title: t('tech.cat.backend'),
-    icon: "⚙️",
+    accent: '#8B5CF6',
+    headerIcon: `${D}/python/python-original.svg`,
     techs: [
-      { name: "Java / Spring Security", desc: t('tech.desc.java') },
-      { name: "Python", desc: t('tech.desc.python') },
-      { name: "NodeJS / PHP", desc: t('tech.desc.node') }
+      { name: "Java / Spring",  icon: `${D}/java/java-original.svg`,      level: 3, desc: t('tech.desc.java')   },
+      { name: "Python",         icon: `${D}/python/python-original.svg`,   level: 3, desc: t('tech.desc.python') },
+      { name: "NodeJS / PHP",   icon: `${D}/nodejs/nodejs-original.svg`,   level: 2, desc: t('tech.desc.node')   },
     ]
   },
   {
     title: t('tech.cat.infra'),
-    icon: "🛡️",
+    accent: '#F97316',
+    headerIcon: `${D}/docker/docker-original.svg`,
     techs: [
-      { name: "Docker", desc: t('tech.desc.docker') },
-      { name: "Linux OS", desc: t('tech.desc.linux') },
-      { name: "Cloud (AWS/Azure)", desc: t('tech.desc.cloud') }
+      { name: "Docker",       icon: `${D}/docker/docker-original.svg`,                                          level: 3, desc: t('tech.desc.docker') },
+      { name: "Linux OS",     icon: `${D}/linux/linux-original.svg`,                                            level: 4, desc: t('tech.desc.linux')  },
+      { name: "AWS / Azure",  icon: `${D}/amazonwebservices/amazonwebservices-original-wordmark.svg`,            level: 2, desc: t('tech.desc.cloud')  },
     ]
   },
   {
     title: t('tech.cat.audit'),
-    icon: "🚨",
+    accent: '#EF4444',
+    headerIcon: `${D}/bash/bash-original.svg`,
     techs: [
-      { name: "Burp Suite / Metasploit", desc: t('tech.desc.burp') },
-      { name: "Wireshark / Nmap", desc: t('tech.desc.wireshark') },
-      { name: "OWASP", desc: t('tech.desc.owasp') }
+      { name: "Burp Suite / Metasploit", icon: null, level: 3, desc: t('tech.desc.burp')      },
+      { name: "Wireshark / Nmap",        icon: null, level: 3, desc: t('tech.desc.wireshark') },
+      { name: "OWASP Top 10",            icon: null, level: 3, desc: t('tech.desc.owasp')     },
     ]
-  }
+  },
 ];
 
-const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
+const learningTechs = [
+  { name: "Flutter", icon: `${D}/flutter/flutter-original.svg` },
+  { name: "Dart",    icon: `${D}/dart/dart-original.svg`       },
+  { name: "Vue.js",  icon: `${D}/vuejs/vuejs-original.svg`     },
+  { name: "Rust",    icon: `${D}/rust/rust-original.svg`       },
+];
 ---
 
 <section id="tech-section">
@@ -64,30 +91,39 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
 
   <div class="tech-grid">
     {categories.map((cat) => (
-      <div class="tech-card" data-aos="fade-up">
-        <div class="card-radar"></div>
+      <div class="tech-card" style={`--accent: ${cat.accent}`} data-aos="fade-up">
         <div class="card-content">
+
           <div class="card-header">
-            <span class="icon">{cat.icon}</span>
+            <img src={cat.headerIcon} alt={cat.title} class="header-icon" />
             <h3>{cat.title}</h3>
           </div>
+
           <ul class="tech-list">
             {cat.techs.map(tech => (
-              <li>
+              <li class="tech-item">
+                <div class="tech-icon-wrap">
+                  {tech.icon
+                    ? <img src={tech.icon} alt={tech.name} class="tech-icon" />
+                    : <span class="tech-icon-fallback">▶</span>
+                  }
+                </div>
                 <div class="tech-info">
-                  <div class="tech-name-wrapper">
-                    <span class="status-dot"></span>
+                  <div class="tech-top">
                     <span class="tech-name">{tech.name}</span>
+                    <div class="level-wrap">
+                      {[1, 2, 3, 4].map(i => (
+                        <span class={`level-dot ${i <= tech.level ? 'filled' : ''}`}></span>
+                      ))}
+                      <span class="level-label">{levelLabels[tech.level - 1]}</span>
+                    </div>
                   </div>
                   <span class="tech-desc">{tech.desc}</span>
                 </div>
               </li>
             ))}
           </ul>
-        </div>
-        <div class="card-footer">
-          <span class="scanning-text">{t('tech.data.type')}</span>
-          <span class="status-ok">{t('tech.status.secure')}</span>
+
         </div>
       </div>
     ))}
@@ -95,25 +131,16 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
 
   <div class="learning-section" data-aos="fade-up">
     <div class="learning-header">
-      <div class="loader-container">
-        <div class="loader-bar"></div>
-      </div>
-      <h3><span class="pulse-icon"></span> {t('tech.learning.title')}</h3>
+      <span class="pulse-dot"></span>
+      <h3>{t('tech.learning.title')}</h3>
     </div>
-    <div class="learning-content">
-      <div class="tech-ticker">
-        {learningTechs.map((tech) => (
-          <div class="learning-item">
-            <span class="code-bracket">[</span>
-            <span class="tech-name-learning">{tech}</span>
-            <span class="code-bracket">]</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    <div class="learning-footer">
-      <span class="scanning-text">{t('tech.learning.buffering')}</span>
-      <span>{t('tech.learning.source')}</span>
+    <div class="learning-items">
+      {learningTechs.map(tech => (
+        <div class="learning-item">
+          <img src={tech.icon} alt={tech.name} class="learning-icon" />
+          <span>{tech.name}</span>
+        </div>
+      ))}
     </div>
   </div>
 </section>
@@ -126,19 +153,19 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
     font-family: 'Courier New', monospace;
   }
 
-  .section-header { 
-    text-align: center; 
-    margin-bottom: 60px; 
+  /* ── Header ── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
   }
-  
-  /* --- ESTILO DE TÍTULO TIPO TERMINAL --- */
-  .glitch-text { 
-    font-size: 2.5rem; 
-    font-weight: bold; 
-    letter-spacing: 4px; 
+
+  .glitch-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 4px;
     color: var(--primary-color);
     text-shadow: 0 0 10px var(--primary-color);
-    display: block; /* Ocupa el ancho para permitir el salto */
+    display: block;
     max-width: 100%;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -151,148 +178,280 @@ const learningTechs = ["Python", "Flutter", "Dart", "Vue.js", "Rust"];
     color: var(--primary-color);
   }
 
-  .scan-line { 
-    width: 100%; 
-    height: 2px; 
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent); 
-    margin-top: 15px; 
-    animation: scanMove 3s infinite linear; 
+  .scan-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    margin-top: 15px;
+    animation: scanMove 3s infinite linear;
   }
 
-  @keyframes scanMove { 
-    0% { transform: scaleX(0); opacity: 0; } 
-    50% { transform: scaleX(1); opacity: 1; } 
-    100% { transform: scaleX(0); opacity: 0; } 
+  @keyframes scanMove {
+    0%   { transform: scaleX(0); opacity: 0; }
+    50%  { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(0); opacity: 0; }
   }
 
-  /* ----- GRID PRINCIPAL ----- */
-  .tech-grid { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 30px; 
-    margin-bottom: 40px; 
+  /* ── Grid ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
   }
 
+  /* ── Card ── */
   .tech-card {
-    background: var(--bg-dark-light, rgba(12, 12, 26, 0.9));
-    border: 1px solid rgba(128, 130, 140, 0.2); 
-    padding: 30px;
-    position: relative;
+    background: var(--bg-dark-light, rgba(12,12,26,0.9));
+    border: 1px solid rgba(128,130,140,0.2);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
     overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   }
 
-  .tech-card:hover { 
-    border-color: var(--primary-color);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.15); 
+  .tech-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px color-mix(in srgb, var(--accent) 15%, transparent);
   }
 
-  .card-radar {
-    position: absolute;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
-    background: conic-gradient(from 0deg, rgba(255,255,255,0.08) 0deg, transparent 60deg);
-    animation: radarRotate 6s infinite linear;
-    pointer-events: none;
+  .card-content {
+    padding: 28px;
   }
 
-  @keyframes radarRotate { to { transform: rotate(360deg); } }
-
+  /* ── Card header ── */
   .card-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid rgba(128, 130, 140, 0.2);
-    padding-bottom: 15px;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(128,130,140,0.2);
   }
 
-  .card-header h3 { font-size: 1.2rem; color: #fff; margin: 0; }
-  .tech-list { list-style: none; padding: 0; }
-  .tech-list li { margin: 18px 0; }
-  .tech-info { display: flex; flex-direction: column; gap: 4px; }
-  
-  .tech-name-wrapper {
+  .header-icon {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+
+  html.light-mode .header-icon {
+    background: rgba(0,0,0,0.06);
+  }
+
+  .card-header h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--accent);
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  /* ── Tech list ── */
+  .tech-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .tech-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tech-icon-wrap {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    margin-top: 2px;
   }
 
-  .tech-name { font-size: 1.1rem; font-weight: bold; color: #fff; }
-  .tech-desc { font-size: 0.85rem; color: var(--text-secondary, #a0a0a0); opacity: 0.7; padding-left: 18px; }
-
-  .status-dot { 
-    width: 8px; height: 8px; 
-    background: var(--primary-color); 
-    border-radius: 50%; 
-    box-shadow: 0 0 8px var(--primary-color); 
+  .tech-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.07);
+    border-radius: 5px;
+    padding: 3px;
   }
 
-  .card-footer {
-    margin-top: 25px;
-    font-size: 0.7rem;
+  html.light-mode .tech-icon {
+    background: rgba(0,0,0,0.06);
+  }
+
+  /* Linux + AWS icons are dark — boost brightness in dark mode */
+  html:not(.light-mode) .tech-icon[src*="linux"],
+  html:not(.light-mode) .tech-icon[src*="amazonwebservices"] {
+    filter: brightness(1.8) saturate(1.2);
+  }
+
+  .tech-icon-fallback {
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  .tech-info {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    border-top: 1px dotted rgba(128, 130, 140, 0.3);
-    padding-top: 15px;
-    color: var(--text-secondary);
+    flex-direction: column;
+    gap: 4px;
   }
 
-  .scanning-text { color: #00d4ff; opacity: 0.8; }
-  .status-ok { color: var(--primary-color); font-weight: bold; animation: blink 1.5s infinite; }
-  @keyframes blink { 50% { opacity: 0.3; } }
+  .tech-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
 
-  /* ----- SECCIÓN HORIZONTAL ----- */
+  .tech-name {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  html.light-mode .tech-name {
+    color: #111;
+  }
+
+  .tech-desc {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #888);
+    opacity: 0.75;
+  }
+
+  /* ── Level indicator ── */
+  .level-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .level-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    background: transparent;
+    transition: background 0.2s;
+  }
+
+  .level-dot.filled {
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  .level-label {
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    margin-left: 4px;
+    opacity: 0.85;
+  }
+
+  /* ── Learning section ── */
   .learning-section {
     background: var(--bg-dark-light);
-    border: 1px solid rgba(128, 130, 140, 0.2);
-    padding: 30px;
-    position: relative;
-    border-radius: 4px;
+    border: 1px solid rgba(128,130,140,0.2);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 6px;
+    padding: 28px 32px;
+  }
+
+  .learning-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
   .learning-header h3 {
-    font-size: 1.1rem;
-    color: #fff;
-    margin: 15px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 0.95rem;
+    color: var(--primary-color);
+    margin: 0;
+    letter-spacing: 1px;
   }
 
-  .pulse-icon {
-    width: 10px; height: 10px;
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
     background: var(--primary-color);
     border-radius: 50%;
+    flex-shrink: 0;
     animation: pulse 2s infinite;
   }
 
   @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 var(--primary-color); opacity: 1; }
-    100% { box-shadow: 0 0 0 10px transparent; opacity: 0; }
+    0%   { box-shadow: 0 0 0 0 var(--primary-color); opacity: 1; }
+    100% { box-shadow: 0 0 0 10px transparent; opacity: 0.6; }
   }
 
-  .loader-container { width: 100%; height: 4px; background: rgba(128, 130, 140, 0.2); position: relative; overflow: hidden; }
-  .loader-bar { width: 100%; height: 100%; background: var(--primary-color); animation: loading-fixed 10s infinite; }
-
-  .tech-ticker { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px 0; }
-  .learning-item { font-size: 1.2rem; font-weight: bold; color: #fff; }
-  .code-bracket { color: #00d4ff; }
-
-  .learning-footer {
-    margin-top: 20px; font-size: 0.7rem; display: flex;
-    justify-content: space-between; color: var(--text-secondary);
-    border-top: 1px solid rgba(128, 130, 140, 0.2); padding-top: 10px;
+  .learning-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
   }
 
-  /* --- RESPONSIVE --- */
+  .learning-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(128,130,140,0.2);
+    border-radius: 6px;
+    padding: 10px 16px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .learning-item:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+  }
+
+  html.light-mode .learning-item {
+    background: rgba(0,0,0,0.04);
+  }
+
+  .learning-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .learning-item span {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+
+  html.light-mode .learning-item span {
+    color: #222;
+  }
+
+  /* ── Responsive ── */
   @media (max-width: 900px) {
     .tech-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 768px) {
-    .glitch-text { 
-      font-size: 2.2rem; 
-      letter-spacing: 2px; 
-    }
+    .glitch-text { font-size: 2rem; letter-spacing: 2px; }
+    .card-content { padding: 20px; }
+    .learning-section { padding: 20px; }
   }
 </style>
