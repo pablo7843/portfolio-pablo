@@ -20,6 +20,14 @@ const { title = 'PCdev' } = Astro.props;
 		<canvas id="particles-bg" aria-hidden="true"></canvas>
 		<div id="cursor-dot"  aria-hidden="true"></div>
 		<div id="cursor-ring" aria-hidden="true"></div>
+
+		<!-- Scroll progress terminal bar -->
+		<aside id="scroll-bar" aria-hidden="true">
+			<span id="sp-section">&gt; INICIO_</span>
+			<span id="sp-blocks"></span>
+			<span id="sp-pct">[00%]</span>
+		</aside>
+
 		<slot />
 	</body>
 </html>
@@ -43,7 +51,7 @@ const { title = 'PCdev' } = Astro.props;
 		pointer-events: none;
 	}
 
-	body > :not(#particles-bg):not(#cursor-dot):not(#cursor-ring) {
+	body > :not(#particles-bg):not(#cursor-dot):not(#cursor-ring):not(#scroll-bar) {
 		position: relative;
 		z-index: 1;
 	}
@@ -83,6 +91,58 @@ const { title = 'PCdev' } = Astro.props;
 	/* Hide on touch devices */
 	@media (hover: none) {
 		#cursor-dot, #cursor-ring { display: none; }
+	}
+
+	/* ── Scroll progress bar ── */
+	#scroll-bar {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		z-index: 500;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 6px 20px;
+		font-family: 'Courier New', monospace;
+		font-size: 0.7rem;
+		color: var(--primary-color, #00ff00);
+		background: color-mix(in srgb, var(--bg-dark, #0a0a14) 80%, transparent);
+		backdrop-filter: blur(6px);
+		border-top: 1px solid color-mix(in srgb, var(--primary-color, #00ff00) 25%, transparent);
+		pointer-events: none;
+		user-select: none;
+		opacity: 0;
+		transition: opacity 0.4s ease;
+		box-sizing: border-box;
+	}
+
+	#scroll-bar.sp-visible { opacity: 1; }
+
+	#sp-section {
+		white-space: nowrap;
+		min-width: 160px;
+		text-shadow: 0 0 5px var(--primary-color, #00ff00);
+		letter-spacing: 1px;
+	}
+
+	#sp-blocks {
+		flex: 1;
+		letter-spacing: 2px;
+		text-shadow: 0 0 6px var(--primary-color, #00ff00);
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	#sp-pct {
+		white-space: nowrap;
+		font-weight: bold;
+		letter-spacing: 1px;
+		text-shadow: 0 0 5px var(--primary-color, #00ff00);
+	}
+
+	@media (max-width: 768px) {
+		#scroll-bar { display: none; }
 	}
 </style>
 
@@ -364,4 +424,63 @@ const initSectionGlitch = () => {
 
 initSectionGlitch();
 document.addEventListener('astro:after-swap', initSectionGlitch);
+</script>
+
+<script>
+// ── Scroll progress terminal bar ─────────────────────────────────────────────
+const initScrollBar = () => {
+  const bar     = document.getElementById('scroll-bar');
+  const blocks  = document.getElementById('sp-blocks');
+  const pct     = document.getElementById('sp-pct');
+  const section = document.getElementById('sp-section');
+  if (!bar || !blocks || !pct || !section) return;
+
+  function getCurrentSection(): string {
+    const headings = Array.from(
+      document.querySelectorAll<HTMLElement>('h1, h2.glitch-text')
+    );
+    let label = 'INICIO';
+    for (const h of headings) {
+      const rect = h.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.55) {
+        label = (h.textContent ?? '')
+          .trim()
+          .replace(/\s+/g, '_')
+          .toUpperCase()
+          .slice(0, 18);
+      }
+    }
+    return label;
+  }
+
+  function getBlockCount(): number {
+    // Fill available width with block chars (~8px each at 0.7rem monospace)
+    const availW = (blocks.parentElement?.clientWidth ?? 600)
+      - (section.offsetWidth ?? 160)
+      - (pct.offsetWidth ?? 60)
+      - 60; // gaps + padding
+    return Math.max(8, Math.floor(availW / 9));
+  }
+
+  function update() {
+    const scrolled = window.scrollY;
+    const total    = document.documentElement.scrollHeight - window.innerHeight;
+    const ratio    = total > 0 ? Math.min(scrolled / total, 1) : 0;
+    const N        = getBlockCount();
+    const filled   = Math.round(ratio * N);
+    const pctNum   = Math.round(ratio * 100);
+
+    blocks.textContent   = '█'.repeat(filled) + '░'.repeat(N - filled);
+    pct.textContent      = `[${String(pctNum).padStart(2, '0')}%]`;
+    section.textContent  = `> ${getCurrentSection()}_`;
+
+    bar.classList.toggle('sp-visible', scrolled > 60);
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+};
+
+initScrollBar();
+document.addEventListener('astro:after-swap', initScrollBar);
 </script>
