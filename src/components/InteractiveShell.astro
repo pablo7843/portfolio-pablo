@@ -1,382 +1,561 @@
 ---
-// src/components/InteractiveShell.astro
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-// Objeto con todas las traducciones para pasar al cliente
 const i18nData = {
-    welcome: t('terminal.welcome'),
-    whoami: t('terminal.whoami'),
-    sudo: t('terminal.sudo'),
-    readme: t('terminal.readme'),
-    projectQr: t('terminal.projects.qr'),
-    projectHarmoniq: t('terminal.projects.harmoniq'),
-    projectWiki: t('terminal.projects.wiki'),
-    errCmd: t('terminal.error.cmd'),
-    errDir: t('terminal.error.dir'),
-    errFile: t('terminal.error.file'),
+    lang,
+    welcome:              t('terminal.welcome'),
+    whoami:               t('terminal.whoami'),
+    sudo:                 t('terminal.sudo'),
+    hire:                 t('terminal.hire'),
+    readme:               t('terminal.readme'),
+    neofetch:             t('terminal.neofetch'),
+    cv:                   t('terminal.cv'),
+    ping:                 t('terminal.ping'),
+    nmap:                 t('terminal.nmap'),
+    hack:                 t('terminal.hack'),
+    projectStarwars:      t('terminal.projects.starwars'),
+    projectQr:            t('terminal.projects.qr'),
+    projectSecdash:       t('terminal.projects.secdash'),
+    projectCodereviewer:  t('terminal.projects.codereviewer'),
+    projectBotdiscord:    t('terminal.projects.botdiscord'),
+    projectShrtnio:       t('terminal.projects.shrtnio'),
+    errCmd:               t('terminal.error.cmd'),
+    errDir:               t('terminal.error.dir'),
+    errFile:              t('terminal.error.file'),
 };
+
+const expandLabel = lang === 'es' ? 'Ampliar terminal' : 'Expand terminal';
+const closeLabel  = lang === 'es' ? 'Cerrar'           : 'Close';
+const expandedMsg = lang === 'es' ? 'Sesión ampliada. Escribe "help" para comandos.' : 'Session expanded. Type "help" for commands.';
 ---
 
+<!-- Compact terminal -->
 <div id="terminal-wrapper" data-i18n={JSON.stringify(i18nData)}>
-    <h2>{t('terminal.header')}</h2>
+    <div class="t-topbar">
+        <h2>{t('terminal.header')}</h2>
+        <button id="expand-btn" title={expandLabel} aria-label={expandLabel}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <polyline points="10,2 14,2 14,6"/>
+                <polyline points="6,14 2,14 2,10"/>
+                <line x1="14" y1="2" x2="9" y2="7"/>
+                <line x1="2" y1="14" x2="7" y2="9"/>
+            </svg>
+        </button>
+    </div>
     <div id="output-area">
         <p class="prompt-line">
-            <span class="prompt-user" id="prompt-user-line">guest@pablo-sec:~$</span> 
+            <span class="prompt-user" id="prompt-user-line">guest@pablo-sec:~$</span>
             <span id="initial-message">{i18nData.welcome}</span>
         </p>
     </div>
-
     <div class="input-line">
-        <span class="prompt-user" id="current-prompt-display">guest@pablo-sec:~$</span> 
+        <span class="prompt-user" id="current-prompt-display">guest@pablo-sec:~$</span>
         <input type="text" id="command-input" autofocus autocomplete="off" />
     </div>
 </div>
 
+<!-- Expanded modal -->
+<div id="terminal-modal" class="t-modal-overlay" aria-hidden="true">
+    <div class="t-modal-panel">
+        <div class="t-modal-topbar">
+            <span class="t-modal-title">💻 Terminal</span>
+            <button id="close-modal-btn" title={closeLabel} aria-label={closeLabel}>✕</button>
+        </div>
+        <div id="modal-output-area">
+            <p class="prompt-line">
+                <span class="prompt-user">guest@pablo-sec:~$</span>
+                <span class="color-info">{expandedMsg}</span>
+            </p>
+        </div>
+        <div class="input-line">
+            <span class="prompt-user" id="modal-prompt-display">guest@pablo-sec:~$</span>
+            <input type="text" id="modal-input" autocomplete="off" />
+        </div>
+    </div>
+</div>
+
 <style>
+    /* ── Compact terminal ── */
     #terminal-wrapper {
         font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         background-color: #0c0c1a;
         color: #00ff00;
-        text-shadow: 0 0 5px rgba(0, 255, 0, 0.4); 
+        text-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
         border: 2px solid #00ff00;
         box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-        padding: 20px;
+        padding: 16px 20px 20px;
         margin: 40px auto;
         width: 90%;
         max-width: 800px;
         height: 400px;
         overflow-y: auto;
-        user-select: text; 
+        user-select: text;
         cursor: text;
-        scroll-behavior: smooth; 
+        scroll-behavior: smooth;
+        display: flex;
+        flex-direction: column;
     }
-    h2 {
+
+    .t-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        flex-shrink: 0;
+    }
+
+    .t-topbar h2 { user-select: none; margin: 0; font-size: 1rem; }
+
+    #expand-btn {
+        background: none;
+        border: 1px solid rgba(0,255,0,0.35);
+        color: #00ff00;
+        border-radius: 4px;
+        padding: 4px 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        flex-shrink: 0;
+    }
+    #expand-btn:hover {
+        border-color: #00ff00;
+        box-shadow: 0 0 8px rgba(0,255,0,0.4);
+    }
+
+    #output-area {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* ── Modal overlay ── */
+    .t-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        backdrop-filter: blur(5px);
+        z-index: 8000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+    }
+    .t-modal-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* ── Modal panel ── */
+    .t-modal-panel {
+        width: min(78vw, 1040px);
+        height: 64vh;
+        min-height: 400px;
+        background: #0c0c1a;
+        border: 2px solid #00ff00;
+        box-shadow: 0 0 50px rgba(0,255,0,0.25), 0 0 120px rgba(0,255,0,0.08);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        padding: 16px 20px 20px;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        color: #00ff00;
+        text-shadow: 0 0 5px rgba(0,255,0,0.4);
+        transform: scale(0.93);
+        transition: transform 0.22s ease;
+        overflow: hidden;
+    }
+    .t-modal-overlay.open .t-modal-panel {
+        transform: scale(1);
+    }
+
+    .t-modal-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        flex-shrink: 0;
+        border-bottom: 1px solid rgba(0,255,0,0.2);
+        padding-bottom: 10px;
+    }
+
+    .t-modal-title {
+        font-size: 0.9rem;
         user-select: none;
+        opacity: 0.85;
     }
+
+    #close-modal-btn {
+        background: none;
+        border: 1px solid rgba(255,51,51,0.4);
+        color: #ff3333;
+        border-radius: 4px;
+        padding: 2px 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.85rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #close-modal-btn:hover {
+        border-color: #ff3333;
+        box-shadow: 0 0 8px rgba(255,51,51,0.4);
+    }
+
+    #modal-output-area {
+        flex: 1;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        font-size: 0.95rem;
+    }
+
+    /* ── Shared styles ── */
     .prompt-user {
-        color: #66ccff; 
-        user-select: none; 
-        text-shadow: 0 0 5px rgba(102, 204, 255, 0.4);
-    }
-    #prompt-user-line{
         color: #66ccff;
         user-select: none;
+        text-shadow: 0 0 5px rgba(102, 204, 255, 0.4);
     }
-    .input-line {
-        display: flex;
-        gap: 5px;
-        margin-top: 10px;
-    }
-    #command-input {
+    #prompt-user-line { color: #66ccff; user-select: none; }
+    .input-line { display: flex; gap: 5px; margin-top: 10px; flex-shrink: 0; }
+    #command-input, #modal-input {
         flex-grow: 1;
         background: none;
         border: none;
-        color: #00ff00; 
+        color: #00ff00;
         outline: none;
         caret-color: #00ff00;
         font-family: inherit;
         font-size: inherit;
-        user-select: text; 
+        user-select: text;
         text-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
     }
-    #output-area p {
-        margin: 0;
-        white-space: pre-wrap;
-    }
-    #initial-message {
-        color: #cccccc;
-    }
+    .prompt-line { margin: 0; white-space: pre-wrap; }
+    #output-area p, #modal-output-area p { margin: 0; white-space: pre-wrap; }
+    #initial-message { color: #cccccc; }
     .color-error { color: #ff3333; text-shadow: 0 0 5px rgba(255, 51, 51, 0.4); }
-    .color-info { color: #ffff66; text-shadow: 0 0 5px rgba(255, 255, 102, 0.4); }
+    .color-info  { color: #ffff66; text-shadow: 0 0 5px rgba(255, 255, 102, 0.4); }
+
+    @media (max-width: 768px) {
+        .t-modal-panel { width: 95vw; height: 80vh; }
+        #expand-btn { display: none; }
+    }
 </style>
 
 <script>
-// @ts-nocheck 
+// @ts-nocheck
+document.addEventListener('DOMContentLoaded', () => {
+    const wrapper   = document.getElementById('terminal-wrapper');
+    const modal     = document.getElementById('terminal-modal');
+    if (!wrapper || !modal) return;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const terminalWrapper = document.getElementById('terminal-wrapper');
-        const input = document.getElementById('command-input');
-        const output = document.getElementById('output-area');
-        const currentPromptDisplay = document.getElementById('current-prompt-display'); 
+    const i18n = JSON.parse(wrapper.dataset.i18n);
+    const isEs = i18n.lang === 'es';
 
-        if (!input || !output || !terminalWrapper || !currentPromptDisplay) return;
+    // Shared state
+    let history      = [];
+    let historyIndex = -1;
+    let isTyping     = false;
 
-        // Recuperamos las traducciones pasadas desde el frontmatter
-        const i18n = JSON.parse(terminalWrapper.dataset.i18n);
-
-        let history = [];
-        let historyIndex = -1;
-        let isTyping = false; 
-
-        const fileSystem = {
-            "~": {
-                "README.txt": i18n.readme,
-                "projects": {
-                    "QR-Shield.txt": i18n.projectQr,
-                    "HarmoniQ.txt": i18n.projectHarmoniq,
-                    "Star-WikiWars.txt": i18n.projectWiki,
-                },
-                "contact": {
-                    "email.txt": "pablosanfelix8@gmail.com",
-                    "linkedin.txt": "https://www.linkedin.com/in/pabloclimentsanfelix/"
-                }
+    const fileSystem = {
+        "~": {
+            "README.txt": i18n.readme,
+            "projects": {
+                "Star-Wars-Nexus.txt":        i18n.projectStarwars,
+                "QR-Shield.txt":              i18n.projectQr,
+                "SecDash.txt":                i18n.projectSecdash,
+                "Code-Security-Reviewer.txt": i18n.projectCodereviewer,
+                "Bot-Discord.txt":            i18n.projectBotdiscord,
+                "Shrtn.io.txt":               i18n.projectShrtnio,
             },
-            currentDir: "~"
-        };
-        
-        const availableCommands = ['help', 'ls', 'cd', 'cat', 'clear', 'scroll', 'whoami', 'date', 'sudo'];
-
-        const getCurrentDirectoryContent = () => {
-            return fileSystem.currentDir === "~"
-                ? fileSystem["~"]
-                : fileSystem["~"][fileSystem.currentDir];
-        };
-
-        const getCompletions = (inputBuffer) => {
-            const parts = inputBuffer.trim().split(/\s+/);
-            let currentWord = parts.length > 1 ? parts.at(-1) : parts[0];
-            const command = parts[0];
-
-            if (parts.length <= 1) {
-                const matches = availableCommands.filter(cmd => cmd.startsWith(currentWord));
-                if (matches.length === 1) {
-                    return { completion: matches[0], matches: [matches[0]] };
-                }
-                return { completion: currentWord, matches: matches };
+            "contact": {
+                "email.txt":    "pclimentsanfelix@gmail.com",
+                "linkedin.txt": "https://www.linkedin.com/in/pabloclimentsanfelix/",
+                "github.txt":   "https://github.com/pablo7843",
             }
+        },
+        currentDir: "~"
+    };
 
-            if (command === 'cd' || command === 'cat') {
-                const currentContent = getCurrentDirectoryContent();
-                if (!currentContent) return { completion: currentWord, matches: [] };
-                
-                const validTargets = Object.keys(currentContent).filter(name => {
-                    const isDirectory = typeof currentContent[name] === 'object';
-                    return command === 'cd' ? isDirectory : true; 
+    const availableCommands = [
+        'help','ls','cd','cat','clear','whoami','date','sudo',
+        'neofetch','tree','curl','contact','ping','nmap','hack','grep','base64','pwd'
+    ];
+
+    const getCurrentDirContent = () =>
+        fileSystem.currentDir === "~"
+            ? fileSystem["~"]
+            : fileSystem["~"][fileSystem.currentDir];
+
+    function buildTree() {
+        const root    = fileSystem["~"];
+        const lines   = ['~'];
+        const entries = Object.entries(root);
+        entries.forEach(([name, val], i) => {
+            const last   = i === entries.length - 1;
+            const prefix = last ? '└── ' : '├── ';
+            if (typeof val === 'object') {
+                lines.push(`${prefix}${name}/`);
+                const sub = Object.entries(val);
+                sub.forEach(([sName], j) => {
+                    const sLast = j === sub.length - 1;
+                    const sPre  = (last ? '    ' : '│   ') + (sLast ? '└── ' : '├── ');
+                    lines.push(`${sPre}${sName}`);
                 });
-
-                const matches = validTargets.filter(target => target.startsWith(currentWord));
-
-                if (matches.length === 1) {
-                    let completion = matches[0];
-                    if (command === 'cd' && typeof currentContent[completion] === 'object') {
-                        // Nada
-                    } else if (command === 'cat') {
-                        completion += ' '; 
-                    }
-
-                    const completedBuffer = inputBuffer.substring(0, inputBuffer.lastIndexOf(currentWord)) + completion;
-                    return { completion: completedBuffer, matches: [matches[0]] };
-                }
-
-                return { completion: currentWord, matches: matches };
+            } else {
+                lines.push(`${prefix}${name}`);
             }
-            
-            return { completion: currentWord, matches: [] };
-        };
+        });
+        return lines.join('\n');
+    }
 
-        const updateInputPrompt = () => {
-            const path = fileSystem.currentDir === "~" ? "~" : fileSystem.currentDir;
-            currentPromptDisplay.textContent = `guest@pablo-sec:${path}$`;
-        };
+    function grepCommand(args) {
+        if (args.length < 2) return { text: 'Usage: grep <pattern> <file>', class: 'color-error' };
+        const [pattern, fileName] = args;
+        const dir = getCurrentDirContent();
+        if (!dir || typeof dir !== 'object' || !(fileName in dir))
+            return { text: `grep: ${fileName}: ${isEs ? 'No existe el archivo' : 'No such file'}`, class: 'color-error' };
+        const content = dir[fileName];
+        if (typeof content !== 'string')
+            return { text: `grep: ${fileName}: ${isEs ? 'Es un directorio' : 'Is a directory'}`, class: 'color-error' };
+        try {
+            const rx    = new RegExp(pattern, 'gi');
+            const lines = content.split('\n').filter(l => rx.test(l));
+            return lines.length ? lines.join('\n') : '';
+        } catch {
+            return { text: `grep: invalid regex: ${pattern}`, class: 'color-error' };
+        }
+    }
 
-        const executeCommand = (command) => {
-            const parts = command.trim().split(/\s+/);
-            const cmd = parts[0].toLowerCase();
-            const args = parts.slice(1);
-
-            switch (cmd) {
-                case 'help':
-                    return `Available commands: 
-                        - help
-                        - ls
-                        - cd
-                        - cat
-                        - clear
-                        - whoami
-                        - date
-                        - sudo`;
-
-                case 'whoami':
-                    return { text: i18n.whoami, class: "color-info" };
-                
-                case 'date':
-                    return new Date().toString();
-
-                case 'sudo':
-                    return { text: i18n.sudo, class: "color-error" };
-
-                case 'ls': {
-                    const currentObj = getCurrentDirectoryContent();
-                    if (typeof currentObj === "object") {
-                        return Object.keys(currentObj).map(key => {
-                            return typeof currentObj[key] === 'object' ? `[DIR] ${key}` : key;
-                        }).join("    ");
-                    }
-                    return { text: "Error: Cannot list contents of a file.", class: "color-error" };
-                }
-
-                case 'cd': {
-                    const target = args[0];
-
-                    if (target === ".." || !target || target === "~") {
-                        fileSystem.currentDir = "~";
-                        updateInputPrompt(); 
-                        return ""; // No devolvemos texto para que sea más limpio
-                    }
-
-                    const obj = fileSystem["~"][target];
-                    if (obj && typeof obj === "object") {
-                        fileSystem.currentDir = target;
-                        updateInputPrompt(); 
-                        return "";
-                    }
-
-                    return { text: i18n.errDir.replace('{target}', target), class: "color-error" };
-                }
-
-                case 'cat': {
-                    const fileName = args[0];
-                    if (!fileName) return { text: "Error: cat requires a file name.", class: "color-error" };
-
-                    const currentObj = getCurrentDirectoryContent();
-
-                    if (currentObj && typeof currentObj === "object" && fileName in currentObj) {
-                        const content = currentObj[fileName];
-
-                        if (fileName.endsWith(".link")) {
-                            return `Opening link: ${content}`;
-                        }
-                        return { text: content, animate: true }; 
-                    }
-                    return { text: i18n.errFile.replace('{target}', fileName), class: "color-error" };
-                }
-
-                case 'clear':
-                    output.innerHTML = "";
-                    return "clear";
-
-                default:
-                    return { text: `${i18n.errCmd}${cmd}`, class: "color-error" };
+    const getCompletions = (buf) => {
+        const parts = buf.trim().split(/\s+/);
+        const cur   = parts.length > 1 ? parts.at(-1) : parts[0];
+        const cmd   = parts[0];
+        if (parts.length <= 1) {
+            const m = availableCommands.filter(c => c.startsWith(cur));
+            return m.length === 1 ? { completion: m[0], matches: m } : { completion: cur, matches: m };
+        }
+        if (cmd === 'cd' || cmd === 'cat' || cmd === 'grep') {
+            const dir = getCurrentDirContent();
+            if (!dir) return { completion: cur, matches: [] };
+            const targets = Object.keys(dir).filter(n => cmd === 'cd' ? typeof dir[n] === 'object' : true);
+            const m = targets.filter(t => t.startsWith(cur));
+            if (m.length === 1) {
+                const completed = buf.substring(0, buf.lastIndexOf(cur)) + m[0] + (cmd !== 'cd' ? ' ' : '');
+                return { completion: completed, matches: m };
             }
-        };
+            return { completion: cur, matches: m };
+        }
+        return { completion: cur, matches: [] };
+    };
 
-        const typeWriterEffect = (element, text, speed = 10) => {
+    const updatePrompts = () => {
+        const p = fileSystem.currentDir === "~" ? "~" : fileSystem.currentDir;
+        const label = `guest@pablo-sec:${p}$`;
+        document.getElementById('current-prompt-display').textContent = label;
+        document.getElementById('modal-prompt-display').textContent   = label;
+    };
+
+    const executeCommand = (command) => {
+        const parts = command.trim().split(/\s+/);
+        const cmd   = parts[0].toLowerCase();
+        const args  = parts.slice(1);
+
+        switch (cmd) {
+            case 'help':
+                return isEs
+                    ? `Comandos disponibles:\n  help       → esta ayuda\n  ls         → listar archivos\n  cd <dir>   → cambiar directorio\n  cat <file> → leer archivo\n  tree       → árbol de archivos\n  grep <p> <f> → buscar en archivo\n  pwd        → directorio actual\n  clear      → limpiar pantalla\n  whoami     → quién eres\n  date       → fecha y hora\n  neofetch   → info del sistema\n  curl pablo.cv → curriculum\n  contact [--email|--linkedin|--github]\n  ping pablo → test de conectividad\n  nmap [target] → escanear puertos\n  base64 -d <str> → decodificar\n  sudo hire pablo → ...\n  hack       → ...`
+                    : `Available commands:\n  help       → this help\n  ls         → list files\n  cd <dir>   → change directory\n  cat <file> → read file\n  tree       → file tree\n  grep <p> <f> → search in file\n  pwd        → current directory\n  clear      → clear screen\n  whoami     → who you are\n  date       → date and time\n  neofetch   → system info\n  curl pablo.cv → curriculum vitae\n  contact [--email|--linkedin|--github]\n  ping pablo → connectivity test\n  nmap [target] → port scan\n  base64 -d <str> → decode\n  sudo hire pablo → ...\n  hack       → ...`;
+
+            case 'whoami':  return { text: i18n.whoami, class: 'color-info' };
+            case 'date':    return new Date().toString();
+            case 'pwd':     return `/home/guest/${fileSystem.currentDir}`;
+            case 'neofetch':return { text: i18n.neofetch, class: 'color-info' };
+            case 'tree':    return buildTree();
+            case 'grep':    return grepCommand(args);
+
+            case 'sudo': {
+                if (args.join(' ').toLowerCase() === 'hire pablo')
+                    return { text: i18n.hire, class: 'color-info', animate: true };
+                return { text: i18n.sudo, class: 'color-error' };
+            }
+
+            case 'curl':
+                if (args[0] === 'pablo.cv') return { text: i18n.cv, animate: true };
+                return { text: `curl: (6) Could not resolve host: ${args[0] || '(empty)'}`, class: 'color-error' };
+
+            case 'contact': {
+                const links = { '--email': 'mailto:pclimentsanfelix@gmail.com', '--linkedin': 'https://www.linkedin.com/in/pabloclimentsanfelix/', '--github': 'https://github.com/pablo7843' };
+                if (args[0] && links[args[0]]) {
+                    window.open(links[args[0]], '_blank');
+                    return isEs ? `Abriendo ${args[0].replace('--','')}...` : `Opening ${args[0].replace('--','')}...`;
+                }
+                return isEs ? 'Uso: contact --email | --linkedin | --github' : 'Usage: contact --email | --linkedin | --github';
+            }
+
+            case 'ping':
+                if (args[0] === 'pablo') return { text: i18n.ping, class: 'color-info' };
+                return { text: `ping: ${args[0] || 'localhost'}: ${isEs ? 'Red inaccesible' : 'Network unreachable'}`, class: 'color-error' };
+
+            case 'nmap':    return { text: i18n.nmap,  class: 'color-info',  animate: true };
+            case 'hack':    return { text: i18n.hack,  class: 'color-error', animate: true };
+
+            case 'base64':
+                if (args[0] === '-d' && args[1]) {
+                    try { return atob(args[1]); }
+                    catch { return { text: 'Error: invalid base64 input', class: 'color-error' }; }
+                }
+                return { text: 'Usage: base64 -d <encoded_string>', class: 'color-error' };
+
+            case 'ls': {
+                const dir = getCurrentDirContent();
+                if (typeof dir === 'object')
+                    return Object.keys(dir).map(k => typeof dir[k] === 'object' ? `[DIR] ${k}` : k).join('    ');
+                return { text: isEs ? 'Error: no es un directorio.' : 'Error: not a directory.', class: 'color-error' };
+            }
+
+            case 'cd': {
+                const target = args[0];
+                if (!target || target === '..' || target === '~') { fileSystem.currentDir = '~'; updatePrompts(); return ''; }
+                const obj = fileSystem['~'][target];
+                if (obj && typeof obj === 'object') { fileSystem.currentDir = target; updatePrompts(); return ''; }
+                return { text: i18n.errDir.replace('{target}', target), class: 'color-error' };
+            }
+
+            case 'cat': {
+                const fileName = args[0];
+                if (!fileName) return { text: isEs ? 'Error: cat requiere un nombre de archivo.' : 'Error: cat requires a file name.', class: 'color-error' };
+                const dir = getCurrentDirContent();
+                if (dir && typeof dir === 'object' && fileName in dir) {
+                    const content = dir[fileName];
+                    if (typeof content === 'string') return { text: content, animate: true };
+                }
+                return { text: i18n.errFile.replace('{target}', fileName), class: 'color-error' };
+            }
+
+            case 'clear': return 'clear';
+
+            default:
+                return { text: `${i18n.errCmd}${cmd}`, class: 'color-error' };
+        }
+    };
+
+    // ── Terminal instance factory ─────────────────────────────────────────────
+    function makeTerminal(outputEl, inputEl) {
+        const typeWrite = (element, text, speed = 8) => {
             isTyping = true;
-            input.disabled = true;
+            inputEl.disabled = true;
             let i = 0;
-            element.textContent = "";
-            
+            element.textContent = '';
             function type() {
                 if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    output.scrollTop = output.scrollHeight;
+                    element.textContent += text.charAt(i++);
+                    outputEl.scrollTop = outputEl.scrollHeight;
                     setTimeout(type, speed);
                 } else {
                     isTyping = false;
-                    input.disabled = false;
-                    input.focus();
+                    inputEl.disabled = false;
+                    inputEl.focus();
                 }
             }
             type();
         };
 
         const appendOutput = (command, result) => {
-            if (result === "clear") return;
-
-            const line = document.createElement("p");
-            line.className = "prompt-line";
-            const path = fileSystem.currentDir === "~" ? "~" : fileSystem.currentDir;
-            
-            line.innerHTML = `<span class="prompt-user">guest@pablo-sec:${path}$</span> ${command}`; 
-            output.appendChild(line);
-
-            let resultText = typeof result === 'string' ? result : result.text;
-            let resultClass = typeof result === 'object' && result.class ? result.class : "";
-            let shouldAnimate = typeof result === 'object' && result.animate;
-
-            if (resultText) {
-                const res = document.createElement("p");
-                if (resultClass) res.classList.add(resultClass);
-                res.style.marginLeft = "10px";
-                output.appendChild(res);
-
-                if (shouldAnimate) {
-                    typeWriterEffect(res, resultText);
-                } else {
-                    res.textContent = resultText;
-                }
+            if (result === 'clear') { outputEl.innerHTML = ''; return; }
+            const path = fileSystem.currentDir === '~' ? '~' : fileSystem.currentDir;
+            const line = document.createElement('p');
+            line.className = 'prompt-line';
+            line.style.whiteSpace = 'pre-wrap';
+            line.style.margin = '0';
+            line.innerHTML = `<span class="prompt-user">guest@pablo-sec:${path}$</span> ${command}`;
+            outputEl.appendChild(line);
+            const text     = typeof result === 'string' ? result : result?.text;
+            const cls      = typeof result === 'object' && result?.class ? result.class : '';
+            const animated = typeof result === 'object' && result?.animate;
+            if (text) {
+                const res = document.createElement('p');
+                if (cls) res.classList.add(cls);
+                res.style.marginLeft = '10px';
+                res.style.whiteSpace = 'pre-wrap';
+                res.style.margin = '0 0 0 10px';
+                outputEl.appendChild(res);
+                if (animated) typeWrite(res, text); else res.textContent = text;
             }
-            output.scrollTop = output.scrollHeight;
+            outputEl.scrollTop = outputEl.scrollHeight;
         };
 
-        input.addEventListener('keydown', (e) => {
-            if (isTyping) {
+        inputEl.addEventListener('keydown', (e) => {
+            if (isTyping) { e.preventDefault(); return; }
+            if (e.key === 'Enter') {
                 e.preventDefault();
-                return;
-            }
-
-            if (e.key === "Enter") {
-                e.preventDefault();
-                const command = input.value.trim();
-                
-                if (command.length === 0) {
-                    appendOutput('', ''); 
-                    input.value = "";
-                    return;
-                }
-
-                history.unshift(command);
+                const cmd = inputEl.value.trim();
+                if (!cmd) { appendOutput('', ''); inputEl.value = ''; return; }
+                history.unshift(cmd);
                 historyIndex = -1;
-
-                const result = executeCommand(command);
-                appendOutput(command, result);
-
-                input.value = "";
+                appendOutput(cmd, executeCommand(cmd));
+                inputEl.value = '';
             }
-            
-            if (e.key === "Tab") {
+            if (e.key === 'Tab') {
                 e.preventDefault();
-                const currentInput = input.value;
-                const { completion, matches } = getCompletions(currentInput);
-
-                if (matches.length === 1) {
-                    input.value = completion;
-                } else if (matches.length > 1) {
-                    appendOutput(currentInput, matches.join("    "));
-                }
+                const { completion, matches } = getCompletions(inputEl.value);
+                if (matches.length === 1) inputEl.value = completion;
+                else if (matches.length > 1) appendOutput(inputEl.value, matches.join('    '));
             }
-
-            if (e.key === "ArrowUp") {
+            if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                if (historyIndex < history.length - 1) {
-                    historyIndex++;
-                    input.value = history[historyIndex];
-                }
+                if (historyIndex < history.length - 1) inputEl.value = history[++historyIndex];
             }
-
-            if (e.key === "ArrowDown") {
+            if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    input.value = history[historyIndex];
-                } else {
-                    historyIndex = -1;
-                    input.value = "";
-                }
+                if (historyIndex > 0) inputEl.value = history[--historyIndex];
+                else { historyIndex = -1; inputEl.value = ''; }
             }
         });
+    }
 
-        terminalWrapper.addEventListener("click", () => {
-            const selection = window.getSelection();
-            if (!selection || selection.toString().length === 0) {
-                if(!isTyping) input.focus();
-            }
-        });
-        
-        input.focus();
+    // Init both terminals
+    makeTerminal(
+        document.getElementById('output-area'),
+        document.getElementById('command-input')
+    );
+    makeTerminal(
+        document.getElementById('modal-output-area'),
+        document.getElementById('modal-input')
+    );
+
+    wrapper.addEventListener('click', () => {
+        const sel = window.getSelection();
+        if (!sel || sel.toString().length === 0) {
+            if (!isTyping) document.getElementById('command-input').focus();
+        }
     });
+
+    // ── Modal open/close ──────────────────────────────────────────────────────
+    document.getElementById('expand-btn').addEventListener('click', () => {
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        setTimeout(() => document.getElementById('modal-input').focus(), 50);
+    });
+
+    const closeModal = () => {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.getElementById('command-input').focus();
+    };
+
+    document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+
+    document.getElementById('command-input').focus();
+});
 </script>
