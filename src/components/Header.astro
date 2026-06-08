@@ -1,5 +1,4 @@
 ---
-// Recibimos el idioma actual como prop desde la página
 const { currentLang } = Astro.props;
 ---
 
@@ -14,49 +13,76 @@ const { currentLang } = Astro.props;
             </a>
         </div>
 
-        <div class="controls-wrapper">
-            <a href={currentLang === 'es' ? '/en/' : '/es/'} class="lang-toggle" title="Switch Language">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-                <span>{currentLang === 'es' ? 'EN' : 'ES'}</span>
-            </a>
+        <div class="header-right">
 
-            <span class="divider">|</span>
+            <!-- Pendant lamp + physics rope -->
+            <div
+                class="lamp-wrap"
+                id="lampWrap"
+                title={currentLang === 'es' ? 'Tira del cordón para cambiar tema' : 'Pull the cord to toggle theme'}
+            >
+                <!-- Lamp icon (SVG pendant lamp) -->
+                <svg class="lamp-icon" id="lampIcon" width="46" height="54" viewBox="0 0 46 54" fill="none" aria-hidden="true">
+                    <!-- Ceiling canopy: oval dome -->
+                    <ellipse cx="23" cy="5" rx="13" ry="5" fill="currentColor" class="lamp-mount"/>
+                    <!-- Canopy center detail -->
+                    <circle cx="23" cy="5" r="3" fill="rgba(0,0,0,0.25)"/>
+                    <!-- Suspension wire -->
+                    <line x1="23" y1="10" x2="23" y2="17" stroke="currentColor" stroke-width="2"/>
+                    <!-- Socket collar -->
+                    <rect x="18" y="17" width="10" height="5" rx="2.5" fill="currentColor"/>
+                    <!-- Shade: curved bell shape via cubic bezier -->
+                    <path d="M19 22 C11 23 5 32 4 42 L42 42 C41 32 35 23 27 22 Z"
+                          stroke="currentColor" stroke-width="1.5" class="lamp-shade"/>
+                    <!-- Bottom rim: ellipse for 3D depth -->
+                    <ellipse cx="23" cy="42" rx="19" ry="3.5" stroke="currentColor" stroke-width="2"/>
+                    <!-- Bulb -->
+                    <circle cx="23" cy="35" r="6.5" stroke="currentColor" stroke-width="1.2" class="lamp-bulb"/>
+                    <!-- Filament -->
+                    <path d="M20 35 Q21.5 32.5 23 35 Q24.5 37.5 26 35"
+                          stroke="currentColor" stroke-width="1" fill="none" class="filament" opacity="0.55"/>
+                    <!-- Glow (light mode) -->
+                    <circle cx="23" cy="35" r="10" class="bulb-glow"/>
+                    <!-- Cord exit ring -->
+                    <circle cx="23" cy="42" r="3" fill="currentColor" class="cord-exit"/>
+                </svg>
 
-            <button id="darkModeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-                <svg class="moon-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </button>
+                <!-- Physics rope canvas — positioned below lamp -->
+                <canvas
+                    id="ropeCanvas"
+                    class="rope-canvas"
+                    width="160"
+                    height="220"
+                    aria-hidden="true"
+                ></canvas>
+            </div>
+
+            <!-- Language pill (only language, no theme toggle) -->
+            <div class="controls-wrapper">
+                <a href={currentLang === 'es' ? '/en/' : '/es/'} class="lang-toggle" title="Switch Language">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span>{currentLang === 'es' ? 'EN' : 'ES'}</span>
+                </a>
+            </div>
+
         </div>
     </div>
 </header>
 
 <style>
-    /* ----- HEADER ESTRUCTURA ----- */
     header {
         background-color: transparent;
-        position: absolute; /* Flota sobre el contenido */
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         padding: 1.5rem 0;
         z-index: 1000;
-        pointer-events: none; /* No bloquea clics en el fondo */
+        pointer-events: none;
     }
 
     .header-container {
@@ -65,25 +91,79 @@ const { currentLang } = Astro.props;
         padding: 0 2rem;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        pointer-events: auto; /* Devolvemos el clic a los botones */
+        align-items: flex-start;
+        pointer-events: auto;
     }
 
-    /* ----- LOGO ----- */
+    /* ── Logo ── */
     .logo a {
         display: flex;
         align-items: center;
-        color: var(--primary-color, #00ff00); 
+        color: var(--primary-color, #00ff00);
         text-decoration: none;
         transition: all 0.3s ease;
     }
-
     .logo a:hover {
         filter: drop-shadow(0 0 10px var(--primary-color));
         transform: scale(1.05);
     }
 
-    /* ----- CONTROLES (CÁPSULA) ----- */
+    /* ── Right side ── */
+    .header-right {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    /* ── Lamp wrap ── */
+    .lamp-wrap {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: default;
+    }
+
+    /* ── Lamp SVG ── */
+    .lamp-icon {
+        color: var(--primary-color);
+        transition: color 0.5s ease, filter 0.5s ease;
+        display: block;
+        flex-shrink: 0;
+    }
+
+    /* Dark mode: lamp OFF — dim green */
+    .lamp-icon { filter: drop-shadow(0 0 4px var(--primary-color)); }
+
+    /* Light mode: lamp ON — warm amber glow */
+    html.light-mode .lamp-icon {
+        color: #d4960a;
+        filter: drop-shadow(0 0 10px rgba(255, 180, 0, 0.9)) drop-shadow(0 0 20px rgba(255,140,0,0.5));
+    }
+
+    .lamp-shade { fill: rgba(0,0,0,0.1); }
+    html.light-mode .lamp-shade { fill: rgba(255,180,0,0.08); }
+
+    .lamp-bulb { fill: rgba(0,0,0,0.05); }
+    html.light-mode .lamp-bulb { fill: rgba(255,220,100,0.6); }
+
+    .bulb-glow { fill: transparent; }
+    html.light-mode .bulb-glow {
+        fill: rgba(255,220,50,0.35);
+        filter: blur(3px);
+    }
+
+    /* ── Rope canvas ── */
+    .rope-canvas {
+        position: absolute;
+        top: 42px;   /* align with cord-exit point at bottom of lamp SVG */
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: auto;
+        cursor: default;
+    }
+
+    /* ── Language pill ── */
     .controls-wrapper {
         display: flex;
         align-items: center;
@@ -93,11 +173,17 @@ const { currentLang } = Astro.props;
         padding: 6px 16px;
         border-radius: 30px;
         border: 1px solid var(--primary-color, #00ff00);
-        box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        box-shadow: 0 0 10px rgba(0,255,0,0.1);
         transition: all 0.3s ease;
+        margin-top: 4px;
     }
 
-    /* ----- IDIOMA ----- */
+    html.light-mode .controls-wrapper {
+        background-color: rgba(255,255,255,0.6);
+        border-color: #888;
+        box-shadow: none;
+    }
+
     .lang-toggle {
         display: flex;
         align-items: center;
@@ -109,58 +195,10 @@ const { currentLang } = Astro.props;
         font-size: 0.9rem;
         transition: all 0.3s ease;
     }
+    .lang-toggle:hover { filter: drop-shadow(0 0 8px var(--primary-color)); }
+    html.light-mode .lang-toggle { color: #333; }
 
-    .lang-toggle:hover {
-        filter: drop-shadow(0 0 8px var(--primary-color));
-    }
-
-    .divider {
-        color: var(--primary-color, #00ff00);
-        opacity: 0.4;
-        font-weight: 300;
-    }
-
-    /* ----- TEMA ----- */
-    .theme-toggle {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: 0;
-    }
-
-    .theme-toggle svg {
-        width: 20px;
-        height: 20px;
-        color: var(--primary-color, #00ff00);
-        position: absolute;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* ----- ANIMACIONES SOL/LUNA ----- */
-    .sun-icon { opacity: 1; transform: scale(1) rotate(0deg); }
-    .moon-icon { opacity: 0; transform: scale(0) rotate(-180deg); }
-
-    html.light-mode .sun-icon { opacity: 0; transform: scale(0) rotate(180deg); }
-    html.light-mode .moon-icon { opacity: 1; transform: scale(1) rotate(0deg); }
-
-    /* ----- MODO CLARO AJUSTES ----- */
-    html.light-mode .controls-wrapper {
-        background-color: rgba(255, 255, 255, 0.6);
-        border-color: #333;
-    }
-    html.light-mode .lang-toggle, 
-    html.light-mode .divider,
-    html.light-mode .theme-toggle svg {
-        color: #333;
-    }
-
-    /* ----- RESPONSIVE ----- */
+    /* ── Responsive ── */
     @media (max-width: 768px) {
         header { padding: 1rem 0; }
         .header-container { padding: 0 1rem; }
@@ -169,25 +207,210 @@ const { currentLang } = Astro.props;
 </style>
 
 <script>
-    const initTheme = () => {
-        const toggleButton = document.getElementById('darkModeToggle');
-        const htmlElement = document.documentElement;
+const initLamp = () => {
+    const canvas  = document.getElementById('ropeCanvas') as HTMLCanvasElement | null;
+    const html    = document.documentElement;
+    if (!canvas) return;
 
-        const savedMode = localStorage.getItem('theme-mode');
-        if (savedMode === 'light') {
-            htmlElement.classList.add('light-mode');
+    const ctx = canvas.getContext('2d')!;
+
+    // Restore saved theme
+    const saved = localStorage.getItem('theme-mode');
+    if (saved === 'light') html.classList.add('light-mode');
+
+    // ── Rope config ──────────────────────────────────────────────────────────
+    const SEGS      = 10;
+    const SEG_LEN   = 10;
+    const PIVOT_X   = canvas.width / 2;   // 80
+    const PIVOT_Y   = 2;
+    const GRAVITY   = 0.38;
+    const DAMPING   = 0.984;
+    const ITERS     = 10;   // constraint iterations per frame
+    const THRESHOLD = 52;   // px below rest to trigger theme toggle
+    const KNOB_R    = 7;    // knob radius px
+    const HIT_R     = 22;   // click hit radius
+
+    interface Pt { x: number; y: number; px: number; py: number; pinned: boolean }
+
+    const pts: Pt[] = Array.from({ length: SEGS + 1 }, (_, i) => ({
+        x:  PIVOT_X,
+        y:  PIVOT_Y + i * SEG_LEN,
+        px: PIVOT_X,
+        py: PIVOT_Y + i * SEG_LEN,
+        pinned: i === 0,
+    }));
+
+    let dragging = false;
+    let animId   = 0;
+
+    // Hint swing on first load
+    setTimeout(() => {
+        pts[SEGS].px = pts[SEGS].x + 4;
+    }, 800);
+
+    // ── Physics ──────────────────────────────────────────────────────────────
+    function update() {
+        for (const p of pts) {
+            if (p.pinned || (dragging && p === pts[SEGS])) continue;
+            const vx = (p.x - p.px) * DAMPING;
+            const vy = (p.y - p.py) * DAMPING;
+            p.px = p.x;
+            p.py = p.y;
+            p.x += vx;
+            p.y += vy + GRAVITY;
         }
 
-        if (toggleButton) {
-            toggleButton.addEventListener('click', () => {
-                htmlElement.classList.toggle('light-mode');
-                const isLightMode = htmlElement.classList.contains('light-mode');
-                localStorage.setItem('theme-mode', isLightMode ? 'light' : 'dark');
-            });
+        // Constraint relaxation
+        for (let iter = 0; iter < ITERS; iter++) {
+            for (let i = 0; i < SEGS; i++) {
+                const a = pts[i], b = pts[i + 1];
+                const dx = b.x - a.x, dy = b.y - a.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+                const diff = (dist - SEG_LEN) / dist * 0.5;
+                if (!a.pinned) { a.x += dx * diff; a.y += dy * diff; }
+                if (!b.pinned) { b.x -= dx * diff; b.y -= dy * diff; }
+            }
         }
     }
 
-    // Reinicializar después de cambios de página en Astro
-    initTheme();
-    document.addEventListener('astro:after-swap', initTheme);
+    // ── Draw ─────────────────────────────────────────────────────────────────
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const isLight = html.classList.contains('light-mode');
+        const ropeColor = isLight ? '#0066cc' : '#00ff00';
+        const glowBlur  = isLight ? 4 : 7;
+
+        ctx.save();
+        ctx.shadowColor = ropeColor;
+        ctx.shadowBlur  = glowBlur;
+        ctx.strokeStyle = ropeColor;
+        ctx.lineWidth   = 2;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+
+        // Smooth rope via quadratic bezier
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length - 1; i++) {
+            const mx = (pts[i].x + pts[i + 1].x) / 2;
+            const my = (pts[i].y + pts[i + 1].y) / 2;
+            ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+        }
+        ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+        ctx.stroke();
+
+        // Knob
+        const k = pts[SEGS];
+        ctx.beginPath();
+        ctx.fillStyle = ropeColor;
+        ctx.arc(k.x, k.y, KNOB_R, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner ring
+        ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.arc(k.x, k.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    // ── Toggle theme ─────────────────────────────────────────────────────────
+    function toggleTheme() {
+        html.classList.toggle('light-mode');
+        localStorage.setItem('theme-mode', html.classList.contains('light-mode') ? 'light' : 'dark');
+
+        // Give the knob a tiny upward kick after toggle (spring feel)
+        pts[SEGS].py = pts[SEGS].y + 4;
+    }
+
+    // ── Animation loop ───────────────────────────────────────────────────────
+    function loop() {
+        update();
+        draw();
+        animId = requestAnimationFrame(loop);
+    }
+    cancelAnimationFrame(animId);
+    loop();
+
+    // ── Interaction helpers ──────────────────────────────────────────────────
+    function getCanvasPos(e: MouseEvent | TouchEvent) {
+        const rect = canvas.getBoundingClientRect();
+        const src  = e instanceof TouchEvent ? e.touches[0] ?? e.changedTouches[0] : e;
+        return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+    }
+
+    function nearKnob(pos: { x: number; y: number }): boolean {
+        const k = pts[SEGS];
+        const d = Math.sqrt((pos.x - k.x) ** 2 + (pos.y - k.y) ** 2);
+        return d < HIT_R;
+    }
+
+    // Track Y at drag start to detect downward pull
+    let dragStartY = 0;
+
+    function onStart(e: MouseEvent | TouchEvent) {
+        const pos = getCanvasPos(e);
+        if (!nearKnob(pos)) return;
+        dragging    = true;
+        dragStartY  = pos.y;
+        canvas.style.cursor = 'grabbing';
+        e.preventDefault();
+    }
+
+    function onMove(e: MouseEvent | TouchEvent) {
+        if (!dragging) {
+            // Update cursor when hovering knob
+            const pos = getCanvasPos(e as MouseEvent | TouchEvent);
+            canvas.style.cursor = nearKnob(pos) ? 'grab' : 'default';
+            return;
+        }
+        const pos  = getCanvasPos(e);
+        const knob = pts[SEGS];
+        // Direct position control — responsive drag
+        knob.px = knob.x;
+        knob.py = knob.y;
+        knob.x  = pos.x;
+        knob.y  = pos.y;
+        e.preventDefault();
+    }
+
+    function onEnd(e: MouseEvent | TouchEvent) {
+        if (!dragging) return;
+        dragging = false;
+        canvas.style.cursor = 'default';
+
+        const pos       = getCanvasPos(e);
+        const pullDelta = pos.y - dragStartY;
+
+        if (pullDelta > THRESHOLD) {
+            toggleTheme();
+        }
+        // Physics takes over automatically — natural swing-back
+    }
+
+    canvas.addEventListener('mousedown',  onStart);
+    canvas.addEventListener('touchstart', onStart, { passive: false });
+    canvas.addEventListener('mousemove',  onMove);
+    canvas.addEventListener('touchmove',  onMove,  { passive: false });
+    window.addEventListener('mouseup',    onEnd);
+    window.addEventListener('touchend',   onEnd);
+
+    // Keyboard fallback on lamp-wrap
+    const lampWrap = document.getElementById('lampWrap');
+    lampWrap?.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleTheme();
+            // Visual kick
+            pts[SEGS].px = pts[SEGS].x + 6;
+        }
+    });
+    lampWrap?.setAttribute('tabindex', '0');
+};
+
+initLamp();
+document.addEventListener('astro:after-swap', initLamp);
 </script>
