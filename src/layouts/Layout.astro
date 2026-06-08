@@ -303,3 +303,65 @@ const initCursor = () => {
 initCursor();
 document.addEventListener('astro:after-swap', initCursor);
 </script>
+
+<script>
+// ── Section title glitch (h2.glitch-text) ────────────────────────────────────
+const initSectionGlitch = () => {
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%<>/?|\\[]{}~^';
+  const rc = () => CHARS[Math.floor(Math.random() * CHARS.length)];
+  const FRAMES = 24;
+  const INTERVAL = 28;
+  const COOLDOWN = FRAMES * INTERVAL + 200;
+
+  function glitchH2(h2: HTMLElement) {
+    const textNodes = Array.from(h2.childNodes).filter(
+      (n): n is Text => n.nodeType === Node.TEXT_NODE
+    );
+    const originals = textNodes.map(n => n.textContent ?? '');
+    const total = originals.reduce((s, t) => s + t.length, 0);
+    if (total < 2) return;
+
+    // Inline glow — bypasses Astro scoped CSS
+    h2.style.color = 'var(--primary-color, #00ff00)';
+    h2.style.textShadow = '0 0 10px var(--primary-color, #00ff00), 2px 0 8px color-mix(in srgb, var(--primary-color, #00ff00) 50%, transparent), -2px 0 8px color-mix(in srgb, var(--primary-color, #00ff00) 30%, transparent)';
+
+    let frame = 0;
+    const id = setInterval(() => {
+      frame++;
+      const locked = Math.floor((frame / FRAMES) * total);
+      let charIdx = 0;
+
+      textNodes.forEach((node, ni) => {
+        const orig = originals[ni];
+        let out = '';
+        for (let i = 0; i < orig.length; i++) {
+          if (orig[i] === ' ') { out += ' '; charIdx++; continue; }
+          out += charIdx < locked ? orig[i] : rc();
+          charIdx++;
+        }
+        node.textContent = out;
+      });
+
+      if (frame >= FRAMES) {
+        clearInterval(id);
+        textNodes.forEach((node, ni) => { node.textContent = originals[ni]; });
+        h2.style.color = '';
+        h2.style.textShadow = '';
+      }
+    }, INTERVAL);
+  }
+
+  document.querySelectorAll<HTMLElement>('h2.glitch-text').forEach(h2 => {
+    let active = false;
+    h2.addEventListener('mouseenter', () => {
+      if (active) return;
+      active = true;
+      glitchH2(h2);
+      setTimeout(() => { active = false; }, COOLDOWN);
+    });
+  });
+};
+
+initSectionGlitch();
+document.addEventListener('astro:after-swap', initSectionGlitch);
+</script>

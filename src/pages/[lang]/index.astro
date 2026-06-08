@@ -163,6 +163,14 @@ main {
 
 @keyframes popIn { to { opacity: 1; } }
 
+.title.glitching {
+  color: var(--primary-color, #00ff00) !important;
+  text-shadow:
+    0 0 10px var(--primary-color, #00ff00),
+    2px 0 8px color-mix(in srgb, var(--primary-color, #00ff00) 50%, transparent),
+    -2px 0 8px color-mix(in srgb, var(--primary-color, #00ff00) 30%, transparent);
+}
+
 @media (max-width: 1024px) {
   .terminal-content { flex-direction: column-reverse; padding: 30px; text-align: center; }
   .text { text-align: center; }
@@ -171,6 +179,59 @@ main {
   .photo { width: 220px; height: 220px; }
 }
 </style>
+
+<script is:inline>
+(function () {
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%<>/?|\\[]{}~^';
+  const rc = () => CHARS[Math.floor(Math.random() * CHARS.length)];
+
+  function startGlitch(h1, span) {
+    const original = span.textContent || '';
+    if (original.length < 3) return;
+    h1.classList.add('glitching');
+
+    const len = original.length;
+    let frame = 0;
+    const FRAMES = 24;
+
+    const id = setInterval(() => {
+      frame++;
+      const locked = Math.floor((frame / FRAMES) * len);
+      let out = '';
+      for (let i = 0; i < len; i++) {
+        if (original[i] === ' ') { out += ' '; continue; }
+        out += i < locked ? original[i] : rc();
+      }
+      span.textContent = out;
+
+      if (frame >= FRAMES) {
+        clearInterval(id);
+        span.textContent = original;
+        h1.classList.remove('glitching');
+      }
+    }, 28);
+  }
+
+  const COOLDOWN = 24 * 28 + 200;
+
+  function initGlitch() {
+    const h1   = document.querySelector('.title');
+    const span = document.getElementById('type-title');
+    if (!h1 || !span) return;
+
+    let active = false;
+    h1.addEventListener('mouseenter', () => {
+      if (active || (span.textContent || '').length < 3) return;
+      active = true;
+      startGlitch(h1, span);
+      setTimeout(() => { active = false; }, COOLDOWN);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initGlitch);
+  document.addEventListener('astro:after-swap', initGlitch);
+})();
+</script>
 
 <script is:inline define:vars={{ 
     text1: t('hero.title'), 
