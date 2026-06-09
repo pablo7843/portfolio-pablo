@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#0d1117"/>
+  <!-- Editor header -->
+  <rect x="0" y="0" width="800" height="40" fill="#161b22"/>
+  <rect x="0" y="0" width="800" height="40" fill="#58a6ff" fill-opacity="0.04"/>
+  <circle cx="22" cy="20" r="7" fill="#ff4444" opacity="0.75"/>
+  <circle cx="46" cy="20" r="7" fill="#ffaa00" opacity="0.75"/>
+  <circle cx="70" cy="20" r="7" fill="#3fb950" opacity="0.75"/>
+  <text x="400" y="25" font-family="'Courier New', monospace" font-size="13" fill="#8b949e" text-anchor="middle">code_security_reviewer.py  —  AI Security Analysis</text>
+  <!-- Line numbers bar -->
+  <rect x="0" y="40" width="52" height="360" fill="#161b22"/>
+  <line x1="52" y1="40" x2="52" y2="400" stroke="#30363d" stroke-width="1"/>
+  <!-- Line numbers -->
+  <text x="26" y="80" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">1</text>
+  <text x="26" y="108" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">2</text>
+  <text x="26" y="136" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">3</text>
+  <text x="26" y="164" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">4</text>
+  <text x="26" y="192" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">5</text>
+  <text x="26" y="220" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">6</text>
+  <text x="26" y="248" font-family="'Courier New', monospace" font-size="13" fill="#484f58" text-anchor="middle">7</text>
+  <!-- Code content - larger font size for readability -->
+  <text x="68" y="80" font-family="'Courier New', monospace" font-size="15" fill="#ff7b72">import</text>
+  <text x="124" y="80" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3"> anthropic</text>
+  <text x="68" y="108" font-family="'Courier New', monospace" font-size="15" fill="#ff7b72">from</text>
+  <text x="108" y="108" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3"> security_rules </text>
+  <text x="298" y="108" font-family="'Courier New', monospace" font-size="15" fill="#ff7b72">import</text>
+  <text x="354" y="108" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3"> OWASP</text>
+  <text x="68" y="136" font-family="'Courier New', monospace" font-size="15" fill="#8b949e"># AI-powered vulnerability scanner</text>
+  <text x="68" y="164" font-family="'Courier New', monospace" font-size="15" fill="#79c0ff">def</text>
+  <text x="103" y="164" font-family="'Courier New', monospace" font-size="15" fill="#d2a8ff"> analyze_code</text>
+  <text x="238" y="164" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3">(code: </text>
+  <text x="296" y="164" font-family="'Courier New', monospace" font-size="15" fill="#ffa657">str</text>
+  <text x="327" y="164" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3">):</text>
+  <text x="68" y="192" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3">    client = anthropic.</text>
+  <text x="248" y="192" font-family="'Courier New', monospace" font-size="15" fill="#d2a8ff">Anthropic</text>
+  <text x="338" y="192" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3">()</text>
+  <text x="68" y="220" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3">    response = client.messages.</text>
+  <text x="308" y="220" font-family="'Courier New', monospace" font-size="15" fill="#d2a8ff">create</text>
+  <text x="358" y="220" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3">(...)</text>
+  <text x="68" y="248" font-family="'Courier New', monospace" font-size="15" fill="#ff7b72">    return</text>
+  <text x="133" y="248" font-family="'Courier New', monospace" font-size="15" fill="#e6edf3"> parse_vulnerabilities(response)</text>
+  <!-- AI badge overlay -->
+  <defs>
+    <radialGradient id="aiGlow" cx="75%" cy="65%" r="40%">
+      <stop offset="0%" stop-color="#a371f7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="purpleGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <ellipse cx="590" cy="310" rx="185" ry="80" fill="url(#aiGlow)"/>
+  <!-- AI badge -->
+  <rect x="430" y="278" width="342" height="100" rx="4" fill="#161b22" stroke="#a371f7" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="601" y="310" font-family="'Courier New', monospace" font-size="12" fill="#8b949e" text-anchor="middle">ANALYZING...</text>
+  <text x="601" y="340" font-family="'Courier New', monospace" font-size="22" fill="#a371f7" text-anchor="middle" filter="url(#purpleGlow)" font-weight="bold">AI Code Reviewer</text>
+  <text x="601" y="364" font-family="'Courier New', monospace" font-size="11" fill="#58a6ff" text-anchor="middle">PYTHON · REACT · ANTHROPIC API</text>
+</svg>

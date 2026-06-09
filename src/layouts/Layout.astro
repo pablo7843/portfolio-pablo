@@ -51,7 +51,7 @@ const { title = 'PCdev' } = Astro.props;
 		pointer-events: none;
 	}
 
-	body > :not(#particles-bg):not(#cursor-dot):not(#cursor-ring):not(#scroll-bar) {
+	:global(body > :not(#particles-bg):not(#cursor-dot):not(#cursor-ring):not(#scroll-bar)) {
 		position: relative;
 		z-index: 1;
 	}
