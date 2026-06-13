@@ -6,22 +6,25 @@ export const prerender = false;
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
 interface RateLimitMap {
-  [key: string]: { count: number; timestamp: number }[];
+  [key: string]: { timestamp: number }[];
 }
 
 const rateLimitMap: RateLimitMap = {};
 const RATE_LIMIT_WINDOW = 5 * 60 * 1000;
 const RATE_LIMIT_MAX = 3;
 
+// Trust only the left-most IP from the proxy chain (Vercel sets these).
 function getClientIP(request: Request): string {
   return (
+    request.headers.get('x-real-ip') ||
     request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
     request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-real-ip') ||
     'unknown'
   );
 }
 
+// Best-effort rate limit. NOTE: in-memory map is per-lambda and resets on cold
+// start, so it is not a hard guarantee. For strong limits use Vercel KV / Upstash.
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const windowStart = now - RATE_LIMIT_WINDOW;
@@ -36,76 +39,66 @@ function checkRateLimit(ip: string): boolean {
     return false;
   }
 
-  rateLimitMap[ip].push({ count: 1, timestamp: now });
+  rateLimitMap[ip].push({ timestamp: now });
   return true;
 }
 
-function sanitizeHTML(input: string): string {
+// Escape every HTML-significant char so values cannot break out of the
+// surrounding markup or attributes when embedded in the email body.
+function escapeHTML(input: string): string {
   return input
+    .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
     .trim();
 }
 
+// Stricter than before: bounded local + domain charset, no quotes/spaces.
 function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email) && email.length <= 100;
+  const emailRegex = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+  return typeof email === 'string' && email.length <= 100 && emailRegex.test(email);
 }
 
 function validateInput(value: string | undefined | null, minLength: number, maxLength: number): boolean {
   return typeof value === 'string' && value.length >= minLength && value.length <= maxLength;
 }
 
-export const POST: APIRoute = async (context) => {
-  console.log('\n=== CONTACT ENDPOINT CALLED ===');
+// Reject cross-site POSTs: the request must originate from our own site.
+function isSameOrigin(request: Request): boolean {
+  const origin = request.headers.get('origin');
+  if (!origin) return true; // non-browser / same-origin fetches may omit it
+  try {
+    return new URL(origin).host === new URL(request.url).host;
+  } catch {
+    return false;
+  }
+}
 
+export const POST: APIRoute = async (context) => {
   try {
     const request = context.request;
-    console.log('Request method:', request.method);
-    console.log('Request URL:', request.url);
-    console.log('Content-Length header:', request.headers.get('content-length'));
 
-    // Log all headers
-    console.log('All headers:');
-    for (const [key, value] of request.headers) {
-      console.log(`  ${key}: ${value}`);
+    if (!isSameOrigin(request)) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
     }
 
-    // Try to read body as text first to see what we get
-    console.log('\nAttempting to read body as text...');
     const bodyText = await request.text();
-    console.log('Body text length:', bodyText.length);
-    console.log('Body text first 200 chars:', bodyText.substring(0, 200));
-    console.log('Body text (full):', bodyText);
-
-    if (!bodyText || bodyText.length === 0) {
-      console.error('Body is empty!');
-      return new Response(
-        JSON.stringify({ error: 'Empty body received' }),
-        { status: 400 }
-      );
+    if (!bodyText) {
+      return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400 });
     }
 
-    // Now parse the JSON
     let body;
     try {
       body = JSON.parse(bodyText);
-      console.log('✓ Parsed JSON successfully:', body);
-    } catch (parseErr) {
-      console.error('JSON parse failed:', parseErr);
-      return new Response(
-        JSON.stringify({ error: 'JSON parse failed', details: String(parseErr) }),
-        { status: 400 }
-      );
+    } catch {
+      return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400 });
     }
 
     const { name, email, subject, message, honeypot, lang } = body;
-    console.log('Extracted fields - name:', name, 'email:', email);
 
     const clientIP = getClientIP(request);
-    console.log('Client IP:', clientIP);
 
     if (!checkRateLimit(clientIP)) {
       return new Response(
@@ -115,7 +108,6 @@ export const POST: APIRoute = async (context) => {
     }
 
     if (honeypot && honeypot.length > 0) {
-      console.log('Honeypot triggered!');
       return new Response(JSON.stringify({ error: 'Spam detected' }), { status: 400 });
     }
 
@@ -125,22 +117,15 @@ export const POST: APIRoute = async (context) => {
       !validateInput(subject, 3, 100) ||
       !validateInput(message, 10, 2000)
     ) {
-      console.log('Validation failed');
-      return new Response(JSON.stringify({
-        error: 'Invalid input',
-        details: {
-          name: !validateInput(name, 2, 60) ? `Invalid name (len: ${name?.length || 0})` : null,
-          email: !validateEmail(email) ? `Invalid email` : null,
-          subject: !validateInput(subject, 3, 100) ? `Invalid subject (len: ${subject?.length || 0})` : null,
-          message: !validateInput(message, 10, 2000) ? `Invalid message (len: ${message?.length || 0})` : null,
-        }
-      }), { status: 400 });
+      return new Response(JSON.stringify({ error: 'Invalid input' }), { status: 400 });
     }
 
-    const sanitizedName = sanitizeHTML(name);
-    const sanitizedEmail = sanitizeHTML(email);
-    const sanitizedSubject = sanitizeHTML(subject);
-    const sanitizedMessage = sanitizeHTML(message);
+    const safeName = escapeHTML(name);
+    const safeEmail = escapeHTML(email);
+    const safeSubject = escapeHTML(subject);
+    const safeMessage = escapeHTML(message);
+    const safeIP = escapeHTML(clientIP);
+    const safeLang = lang === 'es' ? 'ESPAÑOL' : 'ENGLISH';
 
     const emailHTML = `
       <div style="background-color: #0c0c1a; color: #00ff00; font-family: 'Courier New', monospace; padding: 20px; border: 1px solid rgba(0, 255, 0, 0.3); border-radius: 4px;">
@@ -148,34 +133,30 @@ export const POST: APIRoute = async (context) => {
           > NUEVO_MENSAJE_DE_CONTACTO
         </h2>
         <div style="margin: 15px 0; font-size: 14px; line-height: 1.6;">
-          <p><strong style="color: #00ff00;">NOMBRE:</strong> <code>${sanitizedName}</code></p>
-          <p><strong style="color: #00ff00;">EMAIL:</strong> <code><a href="mailto:${sanitizedEmail}" style="color: #00ff00; text-decoration: none;">${sanitizedEmail}</a></code></p>
-          <p><strong style="color: #00ff00;">ASUNTO:</strong> <code>${sanitizedSubject}</code></p>
-          <p><strong style="color: #00ff00;">IDIOMA:</strong> <code>${lang === 'es' ? 'ESPAÑOL' : 'ENGLISH'}</code></p>
-          <p><strong style="color: #00ff00;">IP_DEL_CLIENTE:</strong> <code>${clientIP}</code></p>
+          <p><strong style="color: #00ff00;">NOMBRE:</strong> <code>${safeName}</code></p>
+          <p><strong style="color: #00ff00;">EMAIL:</strong> <code>${safeEmail}</code></p>
+          <p><strong style="color: #00ff00;">ASUNTO:</strong> <code>${safeSubject}</code></p>
+          <p><strong style="color: #00ff00;">IDIOMA:</strong> <code>${safeLang}</code></p>
+          <p><strong style="color: #00ff00;">IP_DEL_CLIENTE:</strong> <code>${safeIP}</code></p>
           <hr style="border: none; border-top: 1px solid rgba(0, 255, 0, 0.2); margin: 20px 0;">
           <p><strong style="color: #00ff00;">MENSAJE:</strong></p>
-          <pre style="background-color: rgba(0, 255, 0, 0.05); padding: 10px; border-left: 2px solid #00ff00; overflow-x: auto;">${sanitizedMessage}</pre>
+          <pre style="background-color: rgba(0, 255, 0, 0.05); padding: 10px; border-left: 2px solid #00ff00; overflow-x: auto; white-space: pre-wrap;">${safeMessage}</pre>
         </div>
       </div>
     `;
 
-    console.log('Sending email...');
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: import.meta.env.CONTACT_EMAIL,
-      subject: `[PORTFOLIO] ${sanitizedSubject}`,
+      replyTo: safeEmail,
+      subject: `[PORTFOLIO] ${safeSubject}`,
       html: emailHTML,
     });
 
-    console.log('✓ Email sent successfully\n');
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
-    console.error('❌ Endpoint error:', error);
-    console.error('Error stack:', (error as any).stack);
-    return new Response(
-      JSON.stringify({ error: 'Server error', details: String(error) }),
-      { status: 500 }
-    );
+    // Log internally only; never leak error details to the client.
+    console.error('Contact endpoint error:', error instanceof Error ? error.message : 'unknown');
+    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
   }
 };

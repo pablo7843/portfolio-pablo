@@ -131,6 +131,13 @@ const expandedMsg = lang === 'es' ? 'Sesión ampliada. Escribe "help" para coman
         overflow-y: auto;
     }
 
+    /* Lock page scroll while terminal is in theater mode */
+    :global(html:has(body.terminal-theater)),
+    :global(body.terminal-theater) {
+        overflow: hidden;
+        touch-action: none;
+    }
+
     /* ── Modal overlay ── */
     .t-modal-overlay {
         position: fixed;
@@ -470,7 +477,11 @@ document.addEventListener('DOMContentLoaded', () => {
             line.className = 'prompt-line';
             line.style.whiteSpace = 'pre-wrap';
             line.style.margin = '0';
-            line.innerHTML = `<span class="prompt-user">guest@pablo-sec:${path}$</span> ${command}`;
+            const promptSpan = document.createElement('span');
+            promptSpan.className = 'prompt-user';
+            promptSpan.textContent = `guest@pablo-sec:${path}$`;
+            line.appendChild(promptSpan);
+            line.appendChild(document.createTextNode(' ' + command));
             outputEl.appendChild(line);
             const text     = typeof result === 'string' ? result : result?.text;
             const cls      = typeof result === 'object' && result?.class ? result.class : '';
@@ -537,12 +548,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('expand-btn').addEventListener('click', () => {
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('terminal-theater');
         setTimeout(() => document.getElementById('modal-input').focus(), 50);
     });
 
     const closeModal = () => {
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('terminal-theater');
         document.getElementById('command-input').focus();
     };
 
