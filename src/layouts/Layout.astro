@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 import '@fontsource/space-mono';
+import BootScreen from '../components/BootScreen.astro';
 
 interface Props {
   title?: string;
@@ -15,8 +16,21 @@ const { title = 'PCdev' } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<script is:inline>
+			// Always load at the top — don't let the browser restore a scrolled position
+			if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+			// Boot/POST screen: show once per session, skip on reduced motion (pre-paint, no flash)
+			try {
+				var pfSkipBoot = sessionStorage.getItem('pf-booted')
+					|| window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				document.documentElement.classList.add(pfSkipBoot ? 'boot-done' : 'booting');
+			} catch (e) {
+				document.documentElement.classList.add('boot-done');
+			}
+		</script>
 	</head>
 	<body>
+		<BootScreen />
 		<canvas id="particles-bg" aria-hidden="true"></canvas>
 		<div id="cursor-dot"  aria-hidden="true"></div>
 		<div id="cursor-ring" aria-hidden="true"></div>
@@ -147,15 +161,7 @@ const { title = 'PCdev' } = Astro.props;
 </style>
 
 <script>
-  import AOS from "aos";
-
   document.addEventListener("DOMContentLoaded", () => {
-    AOS.init({
-      duration: 1000,
-      once: true,
-      offset: 120,
-    });
-
     // ── Particle network background ──────────────────────────────────────────
     const canvas = document.getElementById('particles-bg') as HTMLCanvasElement;
     if (!canvas) return;
@@ -170,7 +176,7 @@ const { title = 'PCdev' } = Astro.props;
     function getThemeColor(): { r: number; g: number; b: number } {
       const isLight = document.documentElement.classList.contains('light-mode');
       return isLight
-        ? { r: 0, g: 102, b: 204 }   // #0066cc
+        ? { r: 31, g: 122, b: 68 }   // #1f7a44 forest green
         : { r: 0, g: 255, b: 0 };    // #00ff00
     }
 

@@ -81,6 +81,7 @@ const learningTechs = [
 
 <section id="tech-section">
   <div class="section-header">
+    <span class="kicker">{t('tech.kicker')}</span>
     <h2 class="glitch-text">{
       titleParts.map((part, index) => (
         <>{part}{index < titleParts.length - 1 && <span>_</span>}<wbr /></>
@@ -91,7 +92,7 @@ const learningTechs = [
 
   <div class="tech-grid">
     {categories.map((cat) => (
-      <div class="tech-card" style={`--accent: ${cat.accent}`} data-aos="fade-up">
+      <div class="tech-card" style={`--accent: ${cat.accent}`}>
         <div class="card-content">
 
           <div class="card-header">
@@ -129,7 +130,7 @@ const learningTechs = [
     ))}
   </div>
 
-  <div class="learning-section" data-aos="fade-up">
+  <div class="learning-section">
     <div class="learning-header">
       <span class="pulse-dot"></span>
       <h3>{t('tech.learning.title')}</h3>
@@ -147,6 +148,7 @@ const learningTechs = [
 
 <style>
   #tech-section {
+    position: relative;
     padding: 80px 20px;
     max-width: 1200px;
     margin: 0 auto;
@@ -157,6 +159,15 @@ const learningTechs = [
   .section-header {
     text-align: center;
     margin-bottom: 60px;
+  }
+
+  .kicker {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--accent-amber);
+    opacity: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
   }
 
   .glitch-text {
@@ -175,13 +186,13 @@ const learningTechs = [
 
   .glitch-text span {
     display: inline-block;
-    color: var(--primary-color);
+    color: var(--accent-amber);
   }
 
   .scan-line {
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent-amber), var(--primary-color), var(--accent-amber), transparent);
     margin-top: 15px;
     animation: scanMove 3s infinite linear;
   }
@@ -202,13 +213,35 @@ const learningTechs = [
 
   /* ── Card ── */
   .tech-card {
+    position: relative;
     background: var(--bg-dark-light, rgba(12,12,26,0.9));
-    border: 1px solid rgba(128,130,140,0.2);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
     border-left: 3px solid var(--accent);
-    border-radius: 6px;
+    border-radius: 0;
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   }
+
+  /* corner registration ticks */
+  .tech-card::before,
+  .learning-section::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    pointer-events: none;
+    z-index: 2;
+    --tk: color-mix(in srgb, var(--accent-amber) 75%, transparent);
+    background:
+      linear-gradient(var(--tk),var(--tk)) 0 0/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 0/2px 7px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/2px 7px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/2px 7px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/2px 7px no-repeat;
+  }
+  .learning-section { position: relative; }
 
   .tech-card:hover {
     transform: translateY(-5px);
@@ -227,7 +260,7 @@ const learningTechs = [
     gap: 14px;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(128,130,140,0.2);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
   }
 
   .header-icon {
@@ -235,7 +268,7 @@ const learningTechs = [
     height: 36px;
     object-fit: contain;
     background: rgba(255,255,255,0.07);
-    border-radius: 6px;
+    border-radius: 0;
     padding: 4px;
     flex-shrink: 0;
   }
@@ -283,7 +316,7 @@ const learningTechs = [
     height: 28px;
     object-fit: contain;
     background: rgba(255,255,255,0.07);
-    border-radius: 5px;
+    border-radius: 0;
     padding: 3px;
   }
 
@@ -367,9 +400,9 @@ const learningTechs = [
   /* ── Learning section ── */
   .learning-section {
     background: var(--bg-dark-light);
-    border: 1px solid rgba(128,130,140,0.2);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
     border-left: 3px solid var(--primary-color);
-    border-radius: 6px;
+    border-radius: 0;
     padding: 28px 32px;
   }
 
@@ -412,8 +445,8 @@ const learningTechs = [
     align-items: center;
     gap: 8px;
     background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(128,130,140,0.2);
-    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
+    border-radius: 0;
     padding: 10px 16px;
     transition: border-color 0.2s, transform 0.2s;
   }

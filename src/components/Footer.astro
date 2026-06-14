@@ -130,8 +130,8 @@ const myEmail = "pclimentsanfelix@gmail.com";
     border-radius: 50%;
   }
 
-  .pulse-dot.green { background: #00ff00; box-shadow: 0 0 8px #00ff00; animation: blink 2s infinite; }
-  .pulse-dot.blue { background: #0066cc; box-shadow: 0 0 8px #0066cc; animation: blink 1.5s infinite; }
+  .pulse-dot.green { background: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); animation: blink 2s infinite; }
+  .pulse-dot.blue { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); animation: blink 1.5s infinite; }
 
   @keyframes blink { 50% { opacity: 0.3; } }
 
@@ -146,7 +146,8 @@ const myEmail = "pclimentsanfelix@gmail.com";
     margin: 0;
     letter-spacing: 2px;
   }
-  .version { font-size: 0.7rem; color: var(--primary-color); opacity: 0.6; }
+  .version { font-size: 0.7rem; color: var(--accent-amber); opacity: 0.85; }
+  .status-label { color: var(--accent-amber); }
   .copy { font-size: 0.7rem; opacity: 0.5; margin-top: 5px; }
 
   /* Links y Botón de Copiar */
@@ -165,7 +166,7 @@ const myEmail = "pclimentsanfelix@gmail.com";
   }
 
   .social-link:hover { color: var(--primary-color); transform: translateX(-5px); }
-  .cmd { color: var(--primary-color); font-weight: bold; }
+  .cmd { color: var(--accent-amber); font-weight: bold; }
 
   /* Reset de estilos para el botón de copiar */
   .copy-trigger {
@@ -209,7 +210,7 @@ const myEmail = "pclimentsanfelix@gmail.com";
     width: 100px;
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+    border-radius: 0;
     overflow: hidden;
   }
 

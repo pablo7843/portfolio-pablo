@@ -1,0 +1,497 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const isEs = lang === 'es';
+
+// ── Chrome labels (English-flavored terminal chrome, like the reference) ──
+const dbTitle      = isEs ? 'BASE DE DATOS DE PERSONAL' : 'PERSONNEL DATABASE';
+const citizenLabel = isEs ? 'ID DE CIUDADANO'           : 'CITIZEN ID';
+const userLabel    = 'USER';
+const sectorLabel  = isEs ? 'SECTOR'    : 'SETTLEMENT';
+const bioLabel     = isEs ? 'BIOMETRÍA' : 'BIOMETRICS';
+const eduLabel     = isEs ? 'FORMACIÓN' : 'EDUCATION';
+const notesLabel   = isEs ? 'NOTAS DEL PERFIL' : 'PROFILE NOTES';
+const attrLabel    = isEs ? 'ATRIBUTOS'        : 'ATTRIBUTES';
+
+// ── Data fields (amber label · value) ──
+const fields = [
+  { k: 'NAME',                              v: 'Pablo Climent Sanfélix' },
+  { k: t('about.f.role').toUpperCase(),     v: t('about.card.role') },
+  { k: t('about.f.location').toUpperCase(), v: t('about.card.location') },
+  { k: t('about.f.langs').toUpperCase(),    v: t('about.card.langs') },
+  { k: eduLabel,                            v: 'DAW · DAM · Ciberseguridad' },
+  { k: t('about.f.focus').toUpperCase(),    v: t('about.card.focus') },
+];
+const statusLabel = t('about.f.status').toUpperCase();
+const statusVal   = t('about.card.status');
+
+const traits = t('about.traits').split(',');
+
+const githubLink   = 'https://github.com/pablo7843';
+const linkedinLink = 'https://www.linkedin.com/in/pabloclimentsanfelix';
+const emailLink    = 'mailto:pclimentsanfelix@gmail.com';
+const cvLink       = '/CV_PabloCliment.pdf';
+
+// Fingerprint cells (casillas) — images in /public/huellas/
+const prints = [
+  { label: 'LH·1', img: '/huellas/1.png' },
+  { label: 'LH·2', img: '/huellas/2.png' },
+  { label: 'RH·1', img: '/huellas/3.png' },
+  { label: 'RH·2', img: '/huellas/4.png' },
+  { label: 'THM',  img: '/huellas/5.png' },
+];
+
+const ruler = Array.from({ length: 11 }, (_, i) => i);
+---
+
+<section class="about-wrapper">
+  <div class="dossier">
+    <!-- ── Corp bar ── -->
+    <header class="dsr-corp">
+      <span class="dsr-corp-id">
+        <svg class="dsr-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 21 L12 3 L21 21" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 21 L12 11 L17 21" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.6"/>
+        </svg>
+        PC-SEC&nbsp;CORP
+      </span>
+      <span class="dsr-corp-mid">{dbTitle}</span>
+      <span class="dsr-corp-live">
+        <span id="dsr-clock">00:00:00</span>
+        <span class="dsr-online"><i class="dsr-led"></i> SYSTEM ONLINE</span>
+      </span>
+    </header>
+
+    <!-- ── Meta row ── -->
+    <div class="dsr-meta">
+      <div class="dsr-meta-pair"><span class="dsr-k">{userLabel}</span><span class="dsr-v">GUEST-AG</span></div>
+      <div class="dsr-meta-pair"><span class="dsr-k">{sectorLabel}</span><span class="dsr-v">VALENCIA · ES</span></div>
+      <span class="dsr-seal" aria-hidden="true">R</span>
+      <span class="dsr-log">LOG: 22</span>
+    </div>
+
+    <!-- ── Main ── -->
+    <div class="dsr-main">
+      <!-- LEFT: id + actions + fields -->
+      <div class="dsr-left">
+        <div class="dsr-idrow">
+          <span class="dsr-idlabel">{citizenLabel}:</span>
+          <span class="dsr-idnum">PCS-25583</span>
+        </div>
+
+        <div class="dsr-actions">
+          <a href={cvLink} download class="dsr-btn dsr-btn-filled">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            {t('social.downloadCV')}
+          </a>
+          <a href={githubLink} target="_blank" rel="noopener" class="dsr-sq" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+          </a>
+          <a href={linkedinLink} target="_blank" rel="noopener" class="dsr-sq" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.4 20.4h-3.5v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.3 2.4 4.3 5.5v6.2zM5.3 7.4a2 2 0 1 1 0-4.1 2 2 0 0 1 0 4.1zM7.1 20.4H3.6V9h3.5v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6C0 23.2.8 24 1.8 24h20.4c1 0 1.8-.8 1.8-1.7V1.7C24 .8 23.2 0 22.2 0z"/></svg>
+          </a>
+          <a href={emailLink} class="dsr-sq" aria-label="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg>
+          </a>
+        </div>
+
+        <div class="dsr-fields">
+          {fields.map(f => (
+            <div class="dsr-row">
+              <span class="dsr-key">{f.k}</span>
+              <span class="dsr-val">{f.v}</span>
+            </div>
+          ))}
+          <div class="dsr-row">
+            <span class="dsr-key">{statusLabel}</span>
+            <span class="dsr-val dsr-status">{statusVal}</span>
+          </div>
+        </div>
+
+        <!-- Notas en el hueco bajo los datos -->
+        <div class="dsr-notes">
+          <span class="dsr-block-label">{notesLabel}</span>
+          <p class="dsr-lead">{t('about.lead')}</p>
+          <p class="dsr-para">{t('about.p1')}</p>
+          <p class="dsr-para">{t('about.p2')}</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: mugshot + ruler + fingerprints -->
+      <div class="dsr-right">
+        <div class="dsr-mug">
+          <img src="/foto.png" alt="Pablo Climent" loading="lazy" />
+          <span class="dsr-mug-tint"   aria-hidden="true"></span>
+          <span class="dsr-mug-dither" aria-hidden="true"></span>
+          <span class="dsr-mug-scan"   aria-hidden="true"></span>
+          <span class="dsr-mug-tag"    aria-hidden="true">REF&nbsp;//&nbsp;FRONT</span>
+        </div>
+        <div class="dsr-ruler" aria-hidden="true">
+          {ruler.map(n => (
+            <span class="dsr-tick"><i></i><b>{n}</b></span>
+          ))}
+        </div>
+
+        <span class="dsr-block-label dsr-bio">{bioLabel}</span>
+        <div class="dsr-prints">
+          {prints.map(p => (
+            <div class="dsr-cell">
+              <img src={p.img} alt={`Huella ${p.label}`} loading="lazy" />
+              <span class="dsr-cell-tag">{p.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Addendum: attributes ── -->
+    <div class="dsr-addendum">
+      <div class="dsr-attrs">
+        <span class="dsr-block-label">{attrLabel}</span>
+        <div class="dsr-chips">
+          {traits.map(tr => <span class="dsr-chip">{tr}</span>)}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-wrapper {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Shell ── */
+  .dossier {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--accent-green-deep) 30%, var(--bg-dark)) 0%, var(--bg-dark) 55%);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 50%, transparent);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--primary-color) 8%, transparent) inset,
+      0 0 35px color-mix(in srgb, var(--primary-color) 10%, transparent);
+  }
+
+  /* ── Corp bar ── */
+  .dsr-corp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 16px;
+    background: color-mix(in srgb, var(--accent-green-deep) 60%, #000);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-amber) 45%, transparent);
+    color: var(--accent-amber);
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+  }
+  html.light-mode .dsr-corp { background: color-mix(in srgb, var(--accent-green-deep) 16%, var(--bg-header)); }
+  .dsr-corp-id { display: inline-flex; align-items: center; gap: 8px; }
+  .dsr-mark { width: 17px; height: 17px; color: var(--accent-amber-bright); flex-shrink: 0; }
+  .dsr-corp-mid { opacity: 0.85; letter-spacing: 3px; }
+  .dsr-corp-live { display: inline-flex; align-items: center; gap: 12px; }
+  #dsr-clock { color: var(--accent-amber-bright); font-variant-numeric: tabular-nums; }
+  .dsr-online {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--primary-color);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--primary-color) 50%, transparent);
+  }
+  .dsr-led {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--primary-color); box-shadow: 0 0 8px var(--primary-color);
+    animation: dsr-blink 1.6s ease-in-out infinite;
+  }
+  @keyframes dsr-blink { 50% { opacity: 0.25; } }
+
+  /* ── Meta row ── */
+  .dsr-meta {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-amber) 20%, transparent);
+    background: color-mix(in srgb, #000 25%, transparent);
+  }
+  .dsr-meta-pair { display: inline-flex; gap: 8px; }
+  .dsr-k { color: var(--accent-amber); }
+  .dsr-v { color: var(--accent-cyan); }
+  .dsr-seal {
+    margin-left: auto;
+    width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid color-mix(in srgb, var(--accent-amber) 60%, transparent);
+    border-radius: 50%;
+    color: var(--accent-amber-bright);
+    font-weight: bold; font-size: 0.7rem;
+  }
+  .dsr-log { color: var(--accent-amber); opacity: 0.8; }
+
+  /* ── Main grid ── */
+  .dsr-main {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 0;
+  }
+  .dsr-left  { padding: 20px 22px; min-width: 0; }
+  .dsr-right {
+    padding: 20px 22px;
+    border-left: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
+    background: color-mix(in srgb, #000 22%, transparent);
+  }
+
+  /* Citizen ID */
+  .dsr-idrow {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed color-mix(in srgb, var(--accent-amber) 30%, transparent);
+  }
+  .dsr-idlabel { font-size: 0.72rem; letter-spacing: 2px; color: var(--accent-amber); }
+  .dsr-idnum {
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--accent-amber-bright);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--accent-amber) 40%, transparent);
+    line-height: 1;
+  }
+
+  /* Actions */
+  .dsr-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .dsr-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 13px;
+    font-size: 0.72rem; font-weight: bold; letter-spacing: 1px;
+    border-radius: 0; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .dsr-btn svg { width: 15px; height: 15px; }
+  .dsr-btn-filled {
+    color: var(--bg-dark);
+    background: var(--accent-amber);
+    border: 1px solid var(--accent-amber-bright);
+  }
+  .dsr-btn-filled:hover {
+    transform: translateY(-2px);
+    background: var(--accent-amber-bright);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent-amber) 45%, transparent);
+  }
+  .dsr-btn-ghost {
+    color: var(--accent-amber);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 45%, transparent);
+    cursor: default;
+  }
+  .dsr-sq {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 31px; height: 31px;
+    color: var(--primary-color);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 35%, transparent);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--primary-color) 6%, transparent);
+    transition: transform 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .dsr-sq svg { width: 16px; height: 16px; }
+  .dsr-sq:hover {
+    transform: translateY(-2px);
+    color: var(--accent-amber-bright);
+    border-color: color-mix(in srgb, var(--accent-amber) 70%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent-amber) 30%, transparent);
+  }
+
+  /* Fields */
+  .dsr-fields { display: flex; flex-direction: column; }
+  .dsr-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 5px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-amber) 12%, transparent);
+  }
+  .dsr-key { color: var(--accent-amber); letter-spacing: 1px; }
+  .dsr-val { color: color-mix(in srgb, var(--primary-color) 72%, #ffffff); }
+  html.light-mode .dsr-val { color: var(--text-secondary); }
+  .dsr-status {
+    color: var(--primary-color);
+    font-weight: bold;
+    text-shadow: 0 0 6px color-mix(in srgb, var(--primary-color) 50%, transparent);
+  }
+
+  /* ── Mugshot ── */
+  .dsr-mug {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--primary-color) 45%, transparent);
+    background: #000;
+  }
+  .dsr-mug img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(1) contrast(1.45) brightness(0.95) sepia(0.2);
+  }
+  .dsr-mug-tint  { position: absolute; inset: 0; background: var(--accent-green); mix-blend-mode: color; opacity: 0.85; }
+  .dsr-mug-dither{
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, #000 0.7px, transparent 1.2px);
+    background-size: 3px 3px;
+    mix-blend-mode: multiply;
+    opacity: 0.6;
+  }
+  .dsr-mug-scan {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent 2px, rgba(0,0,0,0.35) 3px, transparent 4px);
+    pointer-events: none; opacity: 0.6;
+  }
+  .dsr-mug-tag {
+    position: absolute; bottom: 6px; left: 8px;
+    font-size: 0.56rem; letter-spacing: 1px;
+    color: var(--accent-amber-bright);
+    background: rgba(0,0,0,0.55);
+    padding: 2px 6px;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 40%, transparent);
+  }
+
+  /* Ruler under mugshot */
+  .dsr-ruler {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0 18px;
+    padding: 0 1px;
+  }
+  .dsr-tick { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .dsr-tick i { width: 1px; height: 6px; background: color-mix(in srgb, var(--accent-amber) 60%, transparent); }
+  .dsr-tick b { font-size: 0.52rem; font-weight: normal; color: color-mix(in srgb, var(--accent-amber) 75%, transparent); }
+
+  /* ── Fingerprint cells (casillas) ── */
+  .dsr-bio { margin-bottom: 8px; }
+  .dsr-prints {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .dsr-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 3px 4px;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 35%, transparent);
+    background: color-mix(in srgb, var(--primary-color) 5%, transparent);
+    border-radius: 0;
+  }
+  .dsr-cell .dsr-fp { width: 100%; height: auto; color: var(--primary-color); opacity: 0.8; }
+  .dsr-cell img {
+    width: 100%; height: auto; display: block;
+    /* duotono verde fósforo (ridges verdes sobre negro) */
+    filter: grayscale(1) sepia(1) hue-rotate(85deg) saturate(5) brightness(1.05) contrast(1.05);
+  }
+  .dsr-cell-tag { font-size: 0.5rem; letter-spacing: 1px; color: var(--accent-amber); }
+
+  /* Shared block label */
+  .dsr-block-label {
+    display: block;
+    font-size: 0.68rem; letter-spacing: 2px;
+    color: var(--accent-amber);
+    margin-bottom: 8px; padding-bottom: 4px;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-amber) 25%, transparent);
+  }
+
+  /* ── Notes (left column) ── */
+  .dsr-notes { margin-top: 18px; }
+
+  /* ── Addendum ── */
+  .dsr-addendum {
+    padding: 16px 22px 20px;
+    border-top: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
+    background: color-mix(in srgb, #000 18%, transparent);
+  }
+  .dsr-lead {
+    font-size: 0.92rem; line-height: 1.55;
+    color: color-mix(in srgb, var(--primary-color) 72%, #ffffff);
+    font-weight: bold; margin: 0 0 0.9rem;
+    border-left: 2px solid var(--accent-amber); padding-left: 0.9rem;
+  }
+  html.light-mode .dsr-lead { color: var(--text-primary); }
+  .dsr-para { font-size: 0.84rem; line-height: 1.7; color: var(--text-secondary); margin: 0 0 0.7rem; }
+  .dsr-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .dsr-chip {
+    font-size: 0.72rem; font-weight: bold; letter-spacing: 0.5px;
+    padding: 4px 10px; border-radius: 0;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 45%, transparent);
+    color: var(--accent-amber);
+    background: color-mix(in srgb, var(--accent-amber) 8%, transparent);
+    transition: transform 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .dsr-chip:hover {
+    transform: translateY(-2px);
+    color: var(--primary-color);
+    border-color: color-mix(in srgb, var(--primary-color) 50%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--primary-color) 30%, transparent);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 860px) {
+    /* Orden móvil: datos → foto → notas */
+    .dsr-main { display: flex; flex-direction: column; }
+    .dsr-left { display: contents; }
+    .dsr-idrow,
+    .dsr-actions,
+    .dsr-fields { padding: 0 18px; }
+    .dsr-idrow   { order: 1; padding-top: 18px; }
+    .dsr-actions { order: 2; }
+    .dsr-fields  { order: 3; }
+    .dsr-right   { order: 4; border-left: none; border-top: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent); }
+    .dsr-notes   { order: 5; margin: 0; padding: 16px 18px 4px; }
+    .dsr-corp-mid { display: none; }
+
+    /* Foto centrada en medio */
+    .dsr-mug { max-width: 300px; margin: 0 auto; }
+    .dsr-ruler { max-width: 300px; margin-left: auto; margin-right: auto; }
+    .dsr-prints { max-width: 360px; margin: 0 auto; }
+  }
+  @media (max-width: 560px) {
+    .dsr-corp { flex-wrap: wrap; gap: 6px; }
+    .dsr-meta { flex-wrap: wrap; gap: 12px; }
+    .dsr-idnum { font-size: 1.5rem; }
+    .dsr-row { grid-template-columns: 96px 1fr; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const el = document.getElementById('dsr-clock');
+    if (!el) return;
+    const pad = (n) => String(n).padStart(2, '0');
+    const tick = () => {
+      const d = new Date();
+      el.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>

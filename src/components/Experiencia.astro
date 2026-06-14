@@ -1,0 +1,332 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const titleParts = t('exp.title').replace(/\s+/g, '').split('_');
+
+interface Entry {
+  type: 'work' | 'edu';
+  role: string;
+  org: string;
+  date: string;
+  bullets: string[];
+  accent: string;
+  current?: boolean;
+}
+
+const entries: Entry[] = [
+  {
+    type: 'work', accent: '#00ff88',
+    role: t('exp.xsi.role'), org: t('exp.xsi.org'), date: t('exp.xsi.date'),
+    bullets: [t('exp.xsi.b1'), t('exp.xsi.b2'), t('exp.xsi.b3')],
+  },
+  {
+    type: 'edu', accent: '#EF4444',
+    role: t('exp.cyber.role'), org: t('exp.cyber.org'), date: t('exp.cyber.date'),
+    bullets: [t('exp.cyber.b1')],
+  },
+  {
+    type: 'edu', accent: '#7F52FF',
+    role: t('exp.dam.role'), org: t('exp.dam.org'), date: t('exp.dam.date'),
+    bullets: [t('exp.dam.b1')],
+  },
+  {
+    type: 'edu', accent: '#61DAFB',
+    role: t('exp.daw.role'), org: t('exp.daw.org'), date: t('exp.daw.date'),
+    bullets: [t('exp.daw.b1')],
+  },
+];
+
+const stats = [
+  { n: 3,   suffix: '',  label: t('exp.stat.degrees') },
+  { n: 6,   suffix: '',  label: t('exp.stat.projects') },
+  { n: 4,   suffix: '',  label: t('exp.stat.years') },
+  { n: 100, suffix: '%', label: t('exp.stat.available') },
+];
+---
+
+<section class="exp-wrapper">
+  <div class="section-header">
+    <span class="kicker">{t('exp.kicker')}</span>
+    <h2 class="glitch-text">{
+      titleParts.map((part, index) => (
+        <>{part}{index < titleParts.length - 1 && <span>_</span>}<wbr /></>
+      ))
+    }</h2>
+  </div>
+
+  <!-- ── Animated stats ── -->
+  <div class="stats-row">
+    {stats.map(s => (
+      <div class="stat-box">
+        <span class="stat-num">{s.n}{s.suffix}</span>
+        <span class="stat-label">{s.label}</span>
+      </div>
+    ))}
+  </div>
+
+  <!-- ── Timeline ── -->
+  <div class="timeline">
+    {entries.map(e => (
+      <div class="tl-item" style={`--accent: ${e.accent}`}>
+        <div class="tl-marker">
+          <span class="tl-dot"></span>
+        </div>
+        <div class="tl-card">
+          <div class="tl-head">
+            <span class={`tl-tag ${e.type}`}>
+              {e.type === 'work' ? t('exp.tag.work') : t('exp.tag.edu')}
+            </span>
+            <span class="tl-date">
+              {e.date}
+              {e.current && <span class="tl-live">● {t('exp.current')}</span>}
+            </span>
+          </div>
+          <h3 class="tl-role">{e.role}</h3>
+          <span class="tl-org">{e.org}</span>
+          <ul class="tl-bullets">
+            {e.bullets.map(b => <li>{b}</li>)}
+          </ul>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .exp-wrapper {
+    position: relative;
+    max-width: 1000px;
+    margin: 80px auto;
+    padding: 0 20px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Header ── */
+  .section-header { text-align: center; margin-bottom: 48px; }
+
+  .kicker {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--accent-amber);
+    opacity: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .glitch-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px var(--primary-color);
+    margin: 0;
+    line-height: 1.1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .glitch-text span { color: var(--accent-amber); display: inline-block; }
+
+  /* ── Stats ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 56px;
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 20px 10px;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 30%, transparent);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--primary-color) 5%, transparent);
+  }
+
+  .stat-num {
+    display: block;
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--primary-color) 55%, transparent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: var(--accent-amber);
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding-left: 8px;
+  }
+
+  .tl-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 16px;
+    padding-bottom: 28px;
+  }
+
+  /* vertical connector line */
+  .tl-marker { position: relative; display: flex; justify-content: center; }
+
+  .tl-marker::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    bottom: -28px;
+    width: 2px;
+    background: linear-gradient(var(--accent), color-mix(in srgb, var(--accent) 15%, transparent));
+  }
+
+  .tl-item:last-child .tl-marker::before { display: none; }
+
+  .tl-dot {
+    position: relative;
+    z-index: 1;
+    width: 14px;
+    height: 14px;
+    margin-top: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    border: 3px solid var(--bg-dark, #0a0a14);
+  }
+
+  .tl-card {
+    position: relative;
+    background: var(--bg-dark-light, #0c0c1a);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
+    border-left: 3px solid var(--accent);
+    border-radius: 0;
+    padding: 16px 20px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  /* corner registration ticks */
+  .stat-box, .tl-card { position: relative; }
+  .stat-box::before,
+  .tl-card::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    pointer-events: none;
+    --tk: color-mix(in srgb, var(--accent-amber) 75%, transparent);
+    background:
+      linear-gradient(var(--tk),var(--tk)) 0 0/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 0/2px 7px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/2px 7px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/2px 7px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/7px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/2px 7px no-repeat;
+  }
+
+  html.light-mode .tl-card { background: var(--bg-light-card, #f4f4f4); }
+
+  .tl-card:hover {
+    transform: translateX(4px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35), 0 0 16px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  .tl-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .tl-tag {
+    font-size: 0.62rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 0;
+  }
+
+  .tl-tag.work {
+    color: #00ff88;
+    border: 1px solid rgba(0,255,136,0.4);
+    background: rgba(0,255,136,0.08);
+  }
+
+  .tl-tag.edu {
+    color: #66ccff;
+    border: 1px solid rgba(102,204,255,0.4);
+    background: rgba(102,204,255,0.08);
+  }
+
+  .tl-date {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #888);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tl-live {
+    color: #00ff88;
+    font-weight: bold;
+    font-size: 0.65rem;
+    animation: tlpulse 1.6s infinite;
+  }
+
+  @keyframes tlpulse { 50% { opacity: 0.4; } }
+
+  .tl-role {
+    font-size: 1.05rem;
+    color: #fff;
+    margin: 0 0 2px;
+    letter-spacing: 0.3px;
+  }
+
+  html.light-mode .tl-role { color: #111; }
+
+  .tl-org {
+    font-size: 0.8rem;
+    color: var(--accent);
+    opacity: 0.9;
+  }
+
+  .tl-bullets {
+    margin: 10px 0 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .tl-bullets li {
+    font-size: 0.83rem;
+    line-height: 1.55;
+    color: var(--text-secondary, #b0b0b0);
+  }
+
+  html.light-mode .tl-bullets li { color: #444; }
+
+  .tl-bullets li::marker { color: var(--accent); }
+
+  /* ── Responsive ── */
+  @media (max-width: 680px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+    .stat-num { font-size: 2rem; }
+  }
+
+  @media (max-width: 768px) {
+    .glitch-text { font-size: 2rem; letter-spacing: 2px; }
+  }
+</style>

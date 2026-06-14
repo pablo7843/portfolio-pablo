@@ -1,22 +1,38 @@
 @import "tailwindcss";
 
 :root {
+  /* ── Core (dark) — security terminal: phosphor green on green-black ── */
   --primary-color: #00ff00;
-  --bg-dark: #0a0e27;
-  --bg-dark-light: #111735;
-  --bg-header: #1a1f3a;
-  --text-primary: #00ff00;
-  --text-secondary: #00cc00;
+  --bg-dark: #050a07;
+  --bg-dark-light: #0a140e;
+  --bg-header: #0d1a12;
+  --text-primary: #00ff41;
+  --text-secondary: #4eae6a;
+
+  /* ── Accents (dossier palette from /image.png) ── */
+  --accent-amber: #d8a657;        /* labels, corp chrome */
+  --accent-amber-bright: #f0c674; /* highlights */
+  --accent-green: #46a06a;        /* muted mid-green */
+  --accent-green-deep: #16432a;   /* deep forest */
+  --accent-cyan: #66ccff;         /* data / prompts */
 }
 
 html.light-mode {
-  --primary-color: #0066cc;
-  --bg-dark: #f0f2f5;
-  --bg-dark-light: #e2e6ed;
-  --bg-header: #dde2ea;
-  --text-primary: #0066cc;
-  --text-secondary: #4a5568;
-  --bg-light-card: #e2e6ed;
+  /* ── Core (light) — forest green + amber on warm off-white ── */
+  --primary-color: #1f7a44;
+  --bg-dark: #edefe8;
+  --bg-dark-light: #e2e6db;
+  --bg-header: #dce0d4;
+  --text-primary: #1f7a44;
+  --text-secondary: #4a5548;
+  --bg-light-card: #e6e9df;
+
+  /* ── Accents ── */
+  --accent-amber: #a9701f;
+  --accent-amber-bright: #c4882a;
+  --accent-green: #2e7d4f;
+  --accent-green-deep: #1c4a30;
+  --accent-cyan: #2b7fb5;
 }
 
 body {

@@ -103,6 +103,7 @@ const trabajos: Trabajo[] = [
 ---
 
 <div class="trabajos-wrapper-outer">
+  <span class="kicker">{t('projects.kicker')}</span>
   <h2 class="glitch-text">{
     titleParts.map((part, index) => (
       <>{part}{index < titleParts.length - 1 && <span>_</span>}<wbr /></>
@@ -111,7 +112,7 @@ const trabajos: Trabajo[] = [
 
   <div class="trabajos-container">
     {trabajos.map((trabajo, index) => (
-      <div class="flip-card" style={`--accent: ${trabajo.accent}`} data-aos="fade-up">
+      <div class="flip-card" style={`--accent: ${trabajo.accent}`}>
         <div class="flip-card-inner" id={`card-inner-${index}`}>
 
           <!-- FRONT -->
@@ -205,6 +206,15 @@ const trabajos: Trabajo[] = [
                 onclick={`document.getElementById('card-inner-${index}').classList.remove('is-flipped')`}
               >◀ {t('projects.btn.back')}</button>
             </div>
+
+            <!-- Declassified overlay (full-card, shown after decode) -->
+            <div class="declass-overlay hidden" id={`declass-${index}`}>
+              <svg class="declass-check" viewBox="0 0 52 52" aria-hidden="true">
+                <circle class="declass-check-circle" cx="26" cy="26" r="24" />
+                <path class="declass-check-mark" d="M14 27 l8 8 l16 -18" />
+              </svg>
+              <span class="declass-label">{dcls}</span>
+            </div>
           </div>
 
         </div>
@@ -215,6 +225,7 @@ const trabajos: Trabajo[] = [
 
 <style>
   .trabajos-wrapper-outer {
+    position: relative;
     max-width: 1200px;
     margin: 80px auto;
     padding: 0 20px;
@@ -222,6 +233,16 @@ const trabajos: Trabajo[] = [
   }
 
   /* ── Title ── */
+  .kicker {
+    display: block;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--accent-amber);
+    opacity: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
   .glitch-text {
     font-size: 2.5rem;
     font-weight: bold;
@@ -237,7 +258,7 @@ const trabajos: Trabajo[] = [
   }
 
   .glitch-text span {
-    color: var(--primary-color);
+    color: var(--accent-amber);
     display: inline-block;
   }
 
@@ -272,12 +293,32 @@ const trabajos: Trabajo[] = [
     height: 100%;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    border-radius: 8px;
-    border: 1px solid rgba(128, 130, 140, 0.2);
+    border-radius: 0;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  /* corner registration ticks */
+  .flip-card-front::after,
+  .flip-card-back::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    z-index: 3;
+    --tk: color-mix(in srgb, var(--accent-amber) 80%, transparent);
+    background:
+      linear-gradient(var(--tk),var(--tk)) 0 0/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 0/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/2px 8px no-repeat;
   }
 
   .flip-card:hover .flip-card-front {
@@ -338,7 +379,7 @@ const trabajos: Trabajo[] = [
     font-size: 0.65rem;
     font-weight: bold;
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: 0;
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
@@ -387,7 +428,7 @@ const trabajos: Trabajo[] = [
 
   .tech-badge {
     padding: 3px 9px;
-    border-radius: 4px;
+    border-radius: 0;
     border: 1px solid;
     display: flex;
     align-items: center;
@@ -414,7 +455,7 @@ const trabajos: Trabajo[] = [
     background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);
-    border-radius: 4px;
+    border-radius: 0;
     transition: background 0.2s, color 0.2s;
   }
 
@@ -463,7 +504,7 @@ const trabajos: Trabajo[] = [
 
   .scroll-area::-webkit-scrollbar { width: 3px; }
   .scroll-area::-webkit-scrollbar-track { background: transparent; }
-  .scroll-area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+  .scroll-area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 0; }
 
   .details-text {
     font-size: 0.82rem;
@@ -493,7 +534,7 @@ const trabajos: Trabajo[] = [
     font-family: inherit;
     font-size: 0.75rem;
     font-weight: bold;
-    border-radius: 4px;
+    border-radius: 0;
     text-decoration: none;
     border: 1px solid var(--accent);
     color: var(--accent);
@@ -525,7 +566,7 @@ const trabajos: Trabajo[] = [
     font-family: inherit;
     font-size: 0.75rem;
     font-weight: bold;
-    border-radius: 4px;
+    border-radius: 0;
     border: 1px solid rgba(255, 68, 68, 0.5);
     color: #ff6b6b;
     cursor: pointer;
@@ -556,7 +597,7 @@ const trabajos: Trabajo[] = [
     font-weight: bold;
     letter-spacing: 2px;
     padding: 5px 10px;
-    border-radius: 3px;
+    border-radius: 0;
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
@@ -609,7 +650,7 @@ const trabajos: Trabajo[] = [
     font-family: inherit;
     font-size: 0.75rem;
     font-weight: bold;
-    border-radius: 4px;
+    border-radius: 0;
     border: 1px solid rgba(255, 40, 40, 0.5);
     color: #ff6060;
     cursor: pointer;
@@ -626,6 +667,94 @@ const trabajos: Trabajo[] = [
   .access-btn:disabled {
     opacity: 0.6;
     cursor: wait;
+  }
+
+  /* ── Declassified full-card overlay ── */
+  .declass-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    background: var(--bg-dark-light, #0c0c1a);
+    opacity: 1;
+    transition: opacity 0.55s ease;
+  }
+
+  .declass-overlay.fade-out { opacity: 0; }
+
+  .declass-check {
+    width: 48%;
+    max-width: 170px;
+    height: auto;
+    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--primary-color) 60%, transparent));
+  }
+
+  .declass-check-circle {
+    fill: none;
+    stroke: var(--primary-color);
+    stroke-width: 3;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+  }
+
+  .declass-check-mark {
+    fill: none;
+    stroke: var(--primary-color);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+  }
+
+  .declass-overlay.animate-in .declass-check-circle {
+    animation: declassCircle 0.5s ease forwards;
+  }
+
+  .declass-overlay.animate-in .declass-check-mark {
+    animation: declassCheck 0.4s 0.45s ease forwards;
+  }
+
+  .declass-overlay.animate-in .declass-label {
+    animation: declassLabel 0.4s 0.75s ease both;
+  }
+
+  @keyframes declassCircle { to { stroke-dashoffset: 0; } }
+  @keyframes declassCheck  { to { stroke-dashoffset: 0; } }
+  @keyframes declassLabel {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .declass-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--primary-color);
+    text-shadow: 0 0 14px var(--primary-color);
+    opacity: 0;
+  }
+
+  /* Reveal app text after overlay clears */
+  .details-text.reveal-in {
+    animation: detailsReveal 0.5s ease both;
+  }
+
+  @keyframes detailsReveal {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .declass-overlay,
+    .declass-check-circle,
+    .declass-check-mark,
+    .declass-label,
+    .details-text.reveal-in { animation: none !important; transition: none !important; }
   }
 
   .hidden { display: none !important; }
@@ -665,9 +794,29 @@ const trabajos: Trabajo[] = [
           p.dataset.done = '1';
           p.classList.remove('censored');
           btn.classList.add('hidden');
-          stamp?.classList.add('hidden');
-          dStamp?.classList.remove('hidden');
-          gh?.classList.remove('hidden');
+
+          const overlay = document.getElementById(`declass-${idx}`);
+          if (overlay) {
+            // Show full-card overlay + giant green check
+            overlay.classList.remove('hidden');
+            void overlay.offsetWidth; // reflow so animation runs
+            overlay.classList.add('animate-in');
+
+            setTimeout(() => {
+              overlay.classList.add('fade-out');
+              setTimeout(() => {
+                overlay.classList.add('hidden');
+                stamp?.classList.add('hidden');
+                dStamp?.classList.remove('hidden');
+                gh?.classList.remove('hidden');
+                p.classList.add('reveal-in'); // animate app text in
+              }, 550); // matches overlay fade transition
+            }, 1500); // hold giant check ~1.5s
+          } else {
+            stamp?.classList.add('hidden');
+            dStamp?.classList.remove('hidden');
+            gh?.classList.remove('hidden');
+          }
         }
       }
       step();

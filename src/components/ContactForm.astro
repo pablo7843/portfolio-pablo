@@ -18,7 +18,7 @@ const titleParts = cleanTitle.split('_');
 <section id="contact" class="contact-section">
   <div class="contact-wrapper">
 
-    <div class="contact-header" data-aos="fade-up">
+    <div class="contact-header">
       <span class="section-label">{t('contact.section.label')}</span>
       <h2 class="glitch-text">
         {titleParts.map((part: string, index: number) => (
@@ -28,7 +28,7 @@ const titleParts = cleanTitle.split('_');
       <p class="section-subtitle">{t('contact.section.subtitle')}</p>
     </div>
 
-    <div class="terminal-form-container" data-aos="fade-up" data-aos-delay="100">
+    <div class="terminal-form-container">
       <div class="terminal-topbar">
         <div class="terminal-dots">
           <span class="dot red"></span>
@@ -118,6 +118,7 @@ const titleParts = cleanTitle.split('_');
 
 <style>
   .contact-section {
+    position: relative;
     max-width: 1200px;
     margin: 80px auto;
     padding: 0 20px;
@@ -127,8 +128,8 @@ const titleParts = cleanTitle.split('_');
   .section-label {
     display: block;
     font-size: 0.85rem;
-    color: var(--text-secondary);
-    opacity: 0.65;
+    color: var(--accent-amber);
+    opacity: 0.95;
     margin-bottom: 0.5rem;
     letter-spacing: 0.05em;
   }
@@ -145,17 +146,37 @@ const titleParts = cleanTitle.split('_');
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
-  .glitch-text span { color: var(--primary-color); display: inline-block; }
+  .glitch-text span { color: var(--accent-amber); display: inline-block; }
   .section-subtitle { color: var(--text-secondary); font-size: 0.92rem; opacity: 0.7; margin: 0; }
 
   .terminal-form-container {
-    border: 1px solid rgba(0, 255, 0, 0.25);
-    border-radius: 8px;
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 35%, transparent);
+    border-radius: 0;
     overflow: hidden;
     box-shadow: 0 0 25px rgba(0, 255, 0, 0.07);
     background-color: #0c0c1a;
     max-width: 800px;
     margin: 0 auto;
+  }
+
+  /* corner registration ticks */
+  .terminal-form-container::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    z-index: 3;
+    --tk: color-mix(in srgb, var(--accent-amber) 80%, transparent);
+    background:
+      linear-gradient(var(--tk),var(--tk)) 0 0/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 0/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/2px 8px no-repeat;
   }
   .terminal-topbar {
     display: flex;
@@ -177,7 +198,7 @@ const titleParts = cleanTitle.split('_');
   .cf-feedback {
     margin: 16px 20px 0;
     padding: 10px 14px;
-    border-radius: 4px;
+    border-radius: 0;
     font-size: 0.85rem;
     border: 1px solid;
     font-family: 'Courier New', monospace;
@@ -206,7 +227,7 @@ const titleParts = cleanTitle.split('_');
   .cf-input {
     background: rgba(0,255,0,0.02);
     border: 1px solid rgba(0,255,0,0.2);
-    border-radius: 4px;
+    border-radius: 0;
     color: var(--primary-color);
     font-size: 0.88rem;
     padding: 9px 12px;
@@ -243,7 +264,7 @@ const titleParts = cleanTitle.split('_');
     font-size: 0.88rem;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 0;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     display: flex; align-items: center; gap: 8px;
   }

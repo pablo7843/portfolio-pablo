@@ -65,7 +65,7 @@ const { currentLang } = Astro.props;
                         <line x1="2" y1="12" x2="22" y2="12"/>
                         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                     </svg>
-                    <span>{currentLang === 'es' ? 'EN' : 'ES'}</span>
+                    <span>{currentLang === 'es' ? 'ES' : 'EN'}</span>
                 </a>
             </div>
 
@@ -171,7 +171,7 @@ const { currentLang } = Astro.props;
         background-color: rgba(10, 10, 20, 0.5);
         backdrop-filter: blur(8px);
         padding: 6px 16px;
-        border-radius: 30px;
+        border-radius: 0;
         border: 1px solid var(--primary-color, #00ff00);
         box-shadow: 0 0 10px rgba(0,255,0,0.1);
         transition: all 0.3s ease;
@@ -278,7 +278,7 @@ const initLamp = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const isLight = html.classList.contains('light-mode');
-        const ropeColor = isLight ? '#0066cc' : '#00ff00';
+        const ropeColor = isLight ? '#1f7a44' : '#00ff00';
         const glowBlur  = isLight ? 4 : 7;
 
         ctx.save();
