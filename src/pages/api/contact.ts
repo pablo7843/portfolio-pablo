@@ -66,11 +66,17 @@ function validateInput(value: string | undefined | null, minLength: number, maxL
 }
 
 // Reject cross-site POSTs: the request must originate from our own site.
+// On Vercel the lambda's internal request.url host differs from the public
+// domain, so compare the Origin against the forwarded Host header instead.
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin');
   if (!origin) return true; // non-browser / same-origin fetches may omit it
+  const host =
+    request.headers.get('x-forwarded-host') ||
+    request.headers.get('host') ||
+    new URL(request.url).host;
   try {
-    return new URL(origin).host === new URL(request.url).host;
+    return new URL(origin).host === host;
   } catch {
     return false;
   }

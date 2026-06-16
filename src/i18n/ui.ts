@@ -93,7 +93,7 @@ export const ui = {
     // ── Sobre mí ──
     'about.title': 'SOBRE_MÍ',
     'about.kicker': '> cat sobre_mi.txt',
-    'about.lead': 'Del desarrollo full-stack a la ciberseguridad: construyo software y aprendo a romperlo para protegerlo mejor.',
+    'about.lead': 'Desarrollo full-stack y ciberseguridad: aprendo a construir software seguro para así hacerlo invulnerable.',
     'about.p1': 'Soy especializado en Ciberseguridad, técnico superior en Desarrollo de Aplicaciones Web (DAW) y Multiplataforma (DAM). Esa mezcla me deja entender una aplicación: cómo se diseña, cómo se programa y, sobre todo, cómo se asegura.',
     'about.p2': 'También juego a voleibol de alto nivel, donde aprendo disciplina, trabajo en equipo y a rendir bajo presión. Aplico esa misma mentalidad a cada proyecto y a mi aprendizaje día a día.',
     'about.traits': 'Resolución de problemas,Creatividad,Adaptabilidad,Trabajo en equipo,Resiliencia',
@@ -271,7 +271,7 @@ export const ui = {
     // ── About me ──
     'about.title': 'ABOUT_ME',
     'about.kicker': '> cat about_me.txt',
-    'about.lead': 'From full-stack development to cybersecurity: I build software and learn to break it so I can protect it better.',
+    'about.lead': 'Full-stack development and cybersecurity: I learn to build secure software to make it invulnerable.',
     'about.p1': "I'm specialized in Cybersecurity and a Higher Technician in Web (DAW) and Cross-Platform (DAM) App Development. That mix lets me understand an application: how it's designed, how it's coded and, above all, how it's secured.",
     'about.p2': 'I also play volleyball at a high level, where I learn discipline, teamwork and how to perform under pressure. I bring that same mindset to every project and to my day-to-day learning.',
     'about.traits': 'Problem solving,Creativity,Adaptability,Teamwork,Resilience',
