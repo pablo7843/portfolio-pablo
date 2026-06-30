@@ -1,0 +1,670 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang } = Astro.props;
+const currentLang = lang ?? getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang as any);
+
+const titleParts = t('cert.title').replace(/\s+/g, '').split('_');
+
+interface Cert {
+  id: string;
+  cn: string;
+  desc: string;
+  issuer: string;
+  issued: string;
+  duration: string;
+  serial: string;
+  fingerprint: string;
+  tags: string[];
+  img: string;
+  pdf: string;
+  accent: string;
+}
+
+const certs: Cert[] = [
+  {
+    id: 'ia',
+    cn: t('cert.ia.cn'),
+    desc: t('cert.ia.desc'),
+    issuer: t('cert.ia.issuer'),
+    issued: t('cert.ia.issued'),
+    duration: t('cert.ia.duration'),
+    serial: '0x1A2026',
+    // synthetic-but-stable fingerprint — decorative, evokes an x509 hash
+    fingerprint: 'A1:3F:9C:7E:0B:D4:55:8A:2C:E6:91:74:BD:0F:33:1E:6A:C2:48:90',
+    tags: t('cert.ia.tags').split(',').map(s => s.trim()),
+    img: '/certs/desarrollo-con-ia.png',
+    pdf: '/certs/desarrollo-con-ia.pdf',
+    accent: '#66ccff',
+  },
+];
+---
+
+<section id="certificaciones" class="cert-section">
+  <div class="cert-header">
+    <span class="kicker">{t('cert.kicker')}</span>
+    <h2 class="glitch-text">{
+      titleParts.map((part, index) => (
+        <>{part}{index < titleParts.length - 1 && <span>_</span>}<wbr /></>
+      ))
+    }</h2>
+    <p class="section-subtitle">{t('cert.subtitle')}</p>
+  </div>
+
+  <div class="cert-panel" data-cert-panel>
+    <div class="terminal-topbar">
+      <div class="terminal-dots">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+      </div>
+      <span class="terminal-title">{t('cert.terminal.title')}</span>
+      <span class="terminal-title dim">openssl</span>
+    </div>
+
+    <!-- ── Verification log (revealed on scroll) ── -->
+    <div class="verify-log" aria-hidden="true">
+      <span class="vl-line vl-cmd">{t('cert.log.cmd')}</span>
+      <span class="vl-line"><span class="vl-arrow">→</span> {t('cert.log.chain')}</span>
+      <span class="vl-line"><span class="vl-arrow">→</span> {t('cert.log.issuer')}: <span class="vl-ok">[OK]</span></span>
+      <span class="vl-line"><span class="vl-arrow">→</span> {t('cert.log.signature')} <span class="vl-ok">✓</span></span>
+      <span class="vl-line vl-result">
+        <span class="vl-badge">[ {certs.length} ]</span> {t('cert.log.done')}<span class="vl-cursor">▋</span>
+      </span>
+    </div>
+
+    <!-- ── Credential cards ── -->
+    <div class="cert-grid">
+      {certs.map(c => (
+        <article class="cred-card" style={`--accent: ${c.accent}`}>
+          <div class="cred-top">
+            <span class="cred-seal">
+              <span class="seal-ring"><span class="seal-check">✓</span></span>
+              <span class="seal-label">{t('cert.status.verified')}</span>
+            </span>
+            <span class="cred-serial">{t('cert.f.serial')}: {c.serial}</span>
+          </div>
+
+          <h3 class="cred-cn">{c.cn}</h3>
+          <p class="cred-desc">{c.desc}</p>
+
+          <dl class="cred-fields">
+            <div class="cred-field">
+              <dt>{t('cert.f.issuer')}</dt>
+              <dd>{c.issuer}</dd>
+            </div>
+            <div class="cred-field">
+              <dt>{t('cert.f.subject')}</dt>
+              <dd>{t('cert.subject.value')}</dd>
+            </div>
+            <div class="cred-field">
+              <dt>{t('cert.f.issued')}</dt>
+              <dd>{c.issued}</dd>
+            </div>
+            <div class="cred-field">
+              <dt>{t('cert.f.duration')}</dt>
+              <dd>{c.duration}</dd>
+            </div>
+            <div class="cred-field">
+              <dt>{t('cert.f.validity')}</dt>
+              <dd class="cred-infinity">{t('cert.f.validity.value')}</dd>
+            </div>
+          </dl>
+
+          <div class="cred-fingerprint">
+            <span class="fp-label">{t('cert.f.fingerprint')}</span>
+            <code class="fp-hash">{c.fingerprint}</code>
+          </div>
+
+          <div class="cred-tags">
+            {c.tags.map(tag => <span class="cred-tag">{tag}</span>)}
+          </div>
+
+          <div class="cred-actions">
+            <button
+              type="button"
+              class="cred-btn cred-btn-view"
+              data-cert-open
+              data-img={c.img}
+              data-title={c.cn}
+            >{t('cert.btn.view')}</button>
+            <a class="cred-btn cred-btn-dl" href={c.pdf} download target="_blank" rel="noopener">
+              ⤓ {t('cert.btn.download')}
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ── Lightbox ── -->
+<div class="cert-modal" id="cert-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="cert-modal-panel">
+    <div class="cert-modal-bar">
+      <span class="cert-modal-name" id="cert-modal-name"></span>
+      <button type="button" class="cert-modal-close" id="cert-modal-close">{t('cert.modal.close')}</button>
+    </div>
+    <div class="cert-modal-stage" id="cert-modal-stage">
+      <img id="cert-modal-img" class="cert-modal-img" src="" alt="" />
+    </div>
+    <span class="cert-modal-hint">{t('cert.modal.hint')}</span>
+  </div>
+</div>
+
+<style>
+  .cert-section {
+    position: relative;
+    max-width: 1000px;
+    margin: 80px auto;
+    padding: 0 20px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Header ── */
+  .cert-header { text-align: center; margin-bottom: 40px; }
+  .kicker {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--accent-amber);
+    opacity: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .glitch-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px var(--primary-color);
+    margin: 0 0 16px;
+    line-height: 1.1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .glitch-text span { color: var(--accent-amber); display: inline-block; }
+  .section-subtitle { color: var(--text-secondary); font-size: 0.92rem; opacity: 0.75; margin: 0 auto; max-width: 620px; }
+
+  /* ── Panel ── */
+  .cert-panel {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 35%, transparent);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.07);
+    background-color: #0c0c1a;
+  }
+  /* corner registration ticks */
+  .cert-panel::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    z-index: 3;
+    --tk: color-mix(in srgb, var(--accent-amber) 80%, transparent);
+    background:
+      linear-gradient(var(--tk),var(--tk)) 0 0/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 0/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 0/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 0 100%/2px 8px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/8px 2px no-repeat,
+      linear-gradient(var(--tk),var(--tk)) 100% 100%/2px 8px no-repeat;
+  }
+  .terminal-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #1a1a2e;
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.15);
+    user-select: none;
+  }
+  .terminal-dots { display: flex; gap: 7px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .red    { background-color: #ff5f56; }
+  .yellow { background-color: #ffbd2e; }
+  .green  { background-color: #27c93f; }
+  .terminal-title { font-size: 0.78rem; color: var(--primary-color); opacity: 0.65; }
+  .dim { opacity: 0.25; margin-left: auto; }
+
+  /* ── Verification log ── */
+  .verify-log {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 20px 14px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    border-bottom: 1px dashed rgba(0,255,0,0.12);
+    color: var(--text-secondary);
+  }
+  .vl-line {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  .cert-panel.is-verified .vl-line {
+    animation: vl-in 0.4s ease forwards;
+  }
+  .cert-panel.is-verified .vl-line:nth-child(1) { animation-delay: 0.05s; }
+  .cert-panel.is-verified .vl-line:nth-child(2) { animation-delay: 0.40s; }
+  .cert-panel.is-verified .vl-line:nth-child(3) { animation-delay: 0.75s; }
+  .cert-panel.is-verified .vl-line:nth-child(4) { animation-delay: 1.10s; }
+  .cert-panel.is-verified .vl-line:nth-child(5) { animation-delay: 1.45s; }
+  @keyframes vl-in { to { opacity: 1; transform: translateX(0); } }
+
+  .vl-cmd { color: var(--accent-cyan); }
+  .vl-arrow { color: var(--accent-amber); }
+  .vl-ok { color: var(--primary-color); font-weight: bold; text-shadow: 0 0 6px color-mix(in srgb, var(--primary-color) 55%, transparent); }
+  .vl-result { color: var(--primary-color); margin-top: 4px; }
+  .vl-badge { color: var(--accent-amber); font-weight: bold; }
+  .vl-cursor { animation: blink-cur 0.8s step-end infinite; margin-left: 2px; }
+  @keyframes blink-cur { 50% { opacity: 0; } }
+
+  /* ── Credential grid ── */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+    padding: 22px 20px 24px;
+  }
+
+  .cred-card {
+    position: relative;
+    background: var(--bg-dark-light, #0a140e);
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 22%, transparent);
+    border-left: 3px solid var(--accent);
+    padding: 18px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    overflow: hidden;
+  }
+  /* faint scanline texture */
+  .cred-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      color-mix(in srgb, var(--accent) 4%, transparent) 3px 4px
+    );
+    opacity: 0.5;
+    mix-blend-mode: screen;
+  }
+  .cred-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 18px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  html.light-mode .cred-card { background: var(--bg-light-card, #e6e9df); }
+
+  .cred-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* verified seal */
+  .cred-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.62rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+  }
+  .seal-ring {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--primary-color) 55%, transparent);
+  }
+  .seal-ring::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 1px solid var(--primary-color);
+    border-radius: 50%;
+    opacity: 0.35;
+    animation: seal-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes seal-pulse { 0%,100% { transform: scale(1); opacity: 0.35; } 50% { transform: scale(1.18); opacity: 0; } }
+  .seal-check {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7rem;
+    color: var(--primary-color);
+  }
+  .cred-seal { position: relative; }
+  .seal-label { text-shadow: 0 0 6px color-mix(in srgb, var(--primary-color) 40%, transparent); }
+
+  .cred-serial { font-size: 0.62rem; color: var(--text-secondary); opacity: 0.7; }
+
+  .cred-cn {
+    position: relative;
+    z-index: 1;
+    font-size: 1.1rem;
+    color: #fff;
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: 0.3px;
+  }
+  html.light-mode .cred-cn { color: #111; }
+  .cred-desc {
+    position: relative;
+    z-index: 1;
+    margin: -6px 0 0;
+    font-size: 0.78rem;
+    color: var(--accent);
+    opacity: 0.85;
+  }
+
+  /* x509-style field dump */
+  .cred-fields {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px solid rgba(0,255,0,0.08);
+    border-bottom: 1px solid rgba(0,255,0,0.08);
+    padding: 10px 0;
+  }
+  .cred-field {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 10px;
+    font-size: 0.76rem;
+  }
+  .cred-field dt { color: var(--accent-amber); opacity: 0.85; white-space: nowrap; }
+  .cred-field dd { color: var(--text-secondary); margin: 0; }
+  html.light-mode .cred-field dd { color: #444; }
+  .cred-infinity { color: var(--primary-color) !important; }
+
+  .cred-fingerprint {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .fp-label { font-size: 0.64rem; color: var(--accent-amber); opacity: 0.8; letter-spacing: 1px; }
+  .fp-hash {
+    font-size: 0.62rem;
+    color: var(--accent-cyan);
+    word-break: break-all;
+    line-height: 1.4;
+    opacity: 0.85;
+  }
+
+  .cred-tags {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cred-tag {
+    font-size: 0.62rem;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .cred-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  .cred-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 0;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .cred-btn-view {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+  }
+  .cred-btn-view:hover { background: var(--primary-color); color: #000; box-shadow: 0 0 14px rgba(0,255,0,0.25); }
+  .cred-btn-dl {
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 50%, transparent);
+    color: var(--accent-amber);
+  }
+  .cred-btn-dl:hover { border-color: var(--accent-amber); box-shadow: 0 0 12px color-mix(in srgb, var(--accent-amber) 25%, transparent); }
+
+  /* ── Lightbox (theater mode — mirrors the terminal modal) ──
+     position:fixed !important + z-index !important override the global
+     `body > * { position:relative; z-index:1 }` rule in Layout.astro,
+     which otherwise traps this modal inside its section's stacking context
+     and lets later sections paint over the photo. The modal is also moved
+     to <body> via JS so it isn't confined to the section. */
+  .cert-modal {
+    position: fixed !important;
+    inset: 0;
+    z-index: 2147483000 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+  .cert-modal.open { opacity: 1; pointer-events: auto; }
+
+  /* opaque panel — this is what hides the page behind the photo */
+  .cert-modal-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(92vw, 1040px);
+    max-height: 92vh;
+    background: #0c0c1a;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 50px rgba(0,255,0,0.25), 0 0 120px rgba(0,255,0,0.08);
+    padding: 14px 16px 12px;
+    transform: scale(0.93);
+    transition: transform 0.22s ease;
+  }
+  .cert-modal.open .cert-modal-panel { transform: scale(1); }
+  html.light-mode .cert-modal-panel { background: #f0f0f0; }
+
+  /* Lock page scroll while certificate is in theater mode.
+     position:fixed + JS-restored offset keeps the exact scroll position
+     (overflow:hidden alone lets the root jump to the top in some browsers). */
+  :global(body.cert-theater) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  .cert-modal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(0,255,0,0.2);
+    padding-bottom: 8px;
+    font-family: 'Courier New', monospace;
+  }
+  .cert-modal-name { color: var(--primary-color); font-size: 0.85rem; text-shadow: 0 0 8px rgba(0,255,0,0.4); }
+  .cert-modal-close {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .cert-modal-close:hover { background: var(--primary-color); color: #000; }
+
+  .cert-modal-stage {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    line-height: 0;
+    border: 1px solid color-mix(in srgb, var(--accent-amber) 35%, transparent);
+  }
+  .cert-modal-img { width: 100%; height: auto; display: block; }
+  .cert-modal-hint { font-family: 'Courier New', monospace; font-size: 0.72rem; color: var(--text-secondary); opacity: 0.7; text-align: center; flex-shrink: 0; }
+
+  /* ── Light mode panel accents (match ContactForm cyan/blue) ── */
+  html.light-mode .cert-panel { background-color: #f0f0f0; border-color: rgba(0,102,204,0.3); }
+  html.light-mode .terminal-topbar { background-color: #e0e0e0; }
+  html.light-mode .cred-btn-view { border-color: var(--primary-color); color: var(--primary-color); }
+  html.light-mode .cred-btn-view:hover { background: var(--primary-color); color: #fff; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .glitch-text { font-size: 2rem; letter-spacing: 2px; }
+  }
+  @media (max-width: 600px) {
+    .cert-grid { grid-template-columns: 1fr; }
+    .cred-field { grid-template-columns: 92px 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cert-panel.is-verified .vl-line { animation: none; opacity: 1; transform: none; }
+    .seal-ring::after, .vl-cursor { animation: none; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    function initCerts() {
+      // ── Reveal verification log when panel scrolls into view ──
+      var panel = document.querySelector('[data-cert-panel]');
+      if (panel && !panel.dataset.bound) {
+        panel.dataset.bound = '1';
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-verified');
+                io.unobserve(e.target);
+              }
+            });
+          }, { threshold: 0.25 });
+          io.observe(panel);
+        } else {
+          panel.classList.add('is-verified');
+        }
+      }
+
+      // ── Lightbox ──
+      var modal   = document.getElementById('cert-modal');
+      var modalImg = document.getElementById('cert-modal-img');
+      var modalName = document.getElementById('cert-modal-name');
+      var closeBtn = document.getElementById('cert-modal-close');
+      var stage   = document.getElementById('cert-modal-stage');
+      if (!modal || !modalImg || !modalName || !closeBtn) return;
+
+      // Portal the modal to <body> so it escapes its section's stacking
+      // context (Layout sets every section to z-index:1) and can sit above
+      // every other section. Without this, later sections paint over it.
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+
+      var lastFocus = null;
+      var savedScrollY = 0;
+
+      function openModal(img, title) {
+        lastFocus = document.activeElement;
+        savedScrollY = window.scrollY || window.pageYOffset || 0;
+        modalImg.setAttribute('src', img);
+        modalImg.setAttribute('alt', title || 'Certificado');
+        modalName.textContent = title || '';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        // pin the body at its current scroll offset so the page stays put
+        document.body.style.top = (-savedScrollY) + 'px';
+        document.body.classList.add('cert-theater');
+        setTimeout(function () { closeBtn.focus({ preventScroll: true }); }, 50);
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('cert-theater');
+        document.body.style.top = '';
+        // restore the exact scroll position we left from
+        window.scrollTo(0, savedScrollY);
+        // clear src after the fade-out so image doesn't vanish mid-transition
+        setTimeout(function () {
+          if (!modal.classList.contains('open')) modalImg.setAttribute('src', '');
+        }, 240);
+        if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+      }
+
+      document.querySelectorAll('[data-cert-open]').forEach(function (btn) {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', function () {
+          openModal(btn.getAttribute('data-img'), btn.getAttribute('data-title'));
+        });
+      });
+
+      if (!closeBtn.dataset.bound) {
+        closeBtn.dataset.bound = '1';
+        closeBtn.addEventListener('click', closeModal);
+        // click on the dark backdrop (outside the panel) closes
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal();
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCerts);
+    } else {
+      initCerts();
+    }
+    document.addEventListener('astro:after-swap', initCerts);
+  })();
+</script>
